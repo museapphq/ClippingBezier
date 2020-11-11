@@ -14,7 +14,7 @@
     UIBezierPath *shapePath1 = [UIBezierPath bezierPath];
     [shapePath1 moveToPoint:CGPointMake(218.500000, 376.000000)];
     [shapePath1 addCurveToPoint:CGPointMake(227.000000, 362.000000) controlPoint1:CGPointMake(218.100235, 369.321564) controlPoint2:CGPointMake(222.816589, 365.945923)];
-    //    [complexShape addCurveToPoint:CGPointMake(213.000000,372.000000) controlPoint1:CGPointMake(237.447144,352.833008) controlPoint2:CGPointMake(255.082840,326.966705)];
+    //    [shapePath1 addCurveToPoint:CGPointMake(213.000000,372.000000) controlPoint1:CGPointMake(237.447144,352.833008) controlPoint2:CGPointMake(255.082840,326.966705)];
     [shapePath1 addCurveToPoint:CGPointMake(243.000000, 316.000000) controlPoint1:CGPointMake(232.801880, 363.107697) controlPoint2:CGPointMake(248.582321, 338.033752)];
     [shapePath1 addCurveToPoint:CGPointMake(172.000000, 218.000000) controlPoint1:CGPointMake(215.326599, 286.866608) controlPoint2:CGPointMake(182.880371, 258.374298)];
     [shapePath1 addCurveToPoint:CGPointMake(242.000000, 111.000000) controlPoint1:CGPointMake(149.812820, 168.222122) controlPoint2:CGPointMake(195.466583, 119.790573)];
