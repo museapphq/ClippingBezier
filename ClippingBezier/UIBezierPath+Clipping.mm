@@ -107,6 +107,15 @@ static NSInteger segmentCompareCount = 0;
     } else if ([self isFlat] && ![closedPath isFlat]) {
         path1 = self;
         path2 = closedPath;
+    } else if ([closedPath length] == [self length]) {
+        if ([closedPath hash] < [self hash]) {
+            path1 = closedPath;
+            path2 = self;
+            didFlipPathNumbers = YES;
+        } else {
+            path1 = self;
+            path2 = closedPath;
+        }
     } else if ([closedPath length] > [self length]) {
         path1 = closedPath;
         path2 = self;
@@ -1541,8 +1550,8 @@ static NSInteger segmentCompareCount = 0;
     NSArray<DKUIBezierPathShape *> *clippingResult1 = [self uniqueShapesCreatedFromSlicingWithUnclosedPath:scissors];
     NSArray<DKUIBezierPathShape *> *clippingResult2 = [scissors uniqueShapesCreatedFromSlicingWithUnclosedPath:self];
 
-    NSMutableSet<DKUIBezierPathIntersectionPoint*>* intersections1 = [[NSMutableSet alloc] init];
-    NSMutableSet<DKUIBezierPathIntersectionPoint*>* intersections2 = [[NSMutableSet alloc] init];
+    NSMutableSet<DKUIBezierPathIntersectionPoint *> *intersections1 = [[NSMutableSet alloc] init];
+    NSMutableSet<DKUIBezierPathIntersectionPoint *> *intersections2 = [[NSMutableSet alloc] init];
 
     for (DKUIBezierPathShape *shape in clippingResult1) {
         [intersections1 unionSet:[shape intersections]];
@@ -1552,17 +1561,14 @@ static NSInteger segmentCompareCount = 0;
         [intersections2 unionSet:[shape intersections]];
     }
 
-    NSSet *filtered1 = [intersections1 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+    NSSet *filtered1 = [intersections1 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id _Nullable evaluatedObject, NSDictionary<NSString *, id> *_Nullable bindings) {
         return [intersections2 containsObject:evaluatedObject];
     }]];
-    NSSet *filtered2 = [intersections2 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+    NSSet *filtered2 = [intersections2 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id _Nullable evaluatedObject, NSDictionary<NSString *, id> *_Nullable bindings) {
         return [intersections1 containsObject:evaluatedObject];
     }]];
 
     NSLog(@"intersections");
-
-
-
 
 
     // Cutting the scissors path with self will return shapes with flipped intersections,
@@ -1579,13 +1585,11 @@ static NSInteger segmentCompareCount = 0;
     for (DKUIBezierPathShape *firstShape in clippingResult1) {
         BOOL didFind = NO;
         for (DKUIBezierPathShape *secondShape in finalShapes) {
-            NSSet<DKUIBezierPathIntersectionPoint*> *inter1 = [firstShape intersections];
-            NSSet<DKUIBezierPathIntersectionPoint*> *inter2 = [secondShape intersections];
+            NSSet<DKUIBezierPathIntersectionPoint *> *inter1 = [firstShape intersections];
+            NSSet<DKUIBezierPathIntersectionPoint *> *inter2 = [secondShape intersections];
 
             BOOL matchSet1 = [inter1 isSubsetOfSet:inter2];
             BOOL matchSet2 = [inter2 isSubsetOfSet:inter1];
-
-
 
 
             if ([firstShape isSameShapeAs:secondShape] || [[firstShape fullPath] isEqualToBezierPath:[secondShape fullPath]]) {
