@@ -349,6 +349,10 @@ static NSInteger segmentCompareCount = 0;
                     isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
             }
+            // I also need to test if the direction of the boundary crossing is
+            // the same direction. if they both go from outside->inside or inside->outside
+            // then they're duplicate. otherwise it's a very very close out -> in -> out crossing
+            // or in -> out -> in crossing
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else {
