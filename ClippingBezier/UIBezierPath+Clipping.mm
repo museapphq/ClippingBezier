@@ -100,7 +100,14 @@ static NSInteger segmentCompareCount = 0;
     // that we'll return the intersections in the proper path's
     // element/tvalue first
     BOOL didFlipPathNumbers = NO;
-    if ([closedPath isFlat]) {
+    if ([closedPath isFlat] && ![self isFlat]) {
+        path1 = closedPath;
+        path2 = self;
+        didFlipPathNumbers = YES;
+    } else if ([self isFlat] && ![closedPath isFlat]) {
+        path1 = self;
+        path2 = closedPath;
+    } else if ([closedPath length] > [self length]) {
         path1 = closedPath;
         path2 = self;
         didFlipPathNumbers = YES;
@@ -284,16 +291,7 @@ static NSInteger segmentCompareCount = 0;
             return NSOrderedDescending;
         }];
 
-        [foundIntersections enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            DKUIBezierPathIntersectionPoint *intersection = obj;
-            if (!didFlipPathNumbers) {
-                intersection.pathLength1 = path1EstimatedLength;
-                intersection.pathLength2 = path2EstimatedLength;
-            } else {
-                intersection.pathLength1 = path2EstimatedLength;
-                intersection.pathLength2 = path1EstimatedLength;
-            }
-        }];
+        NSLog(@"foundIntersections: %@", foundIntersections);
 
         // save all of our intersections, we may need this reference
         // later if we filter out too many intersections as duplicates
@@ -331,9 +329,25 @@ static NSInteger segmentCompareCount = 0;
             }
             if (isDistinctIntersection) {
                 lastInter = obj;
+            } else {
+                [[lastInter matchedIntersections] addObject:obj];
             }
             return isDistinctIntersection;
         }]]];
+
+        NSLog(@"filtered: %@", foundIntersections);
+
+        // make sure we have the points sorted by the intersection location
+        // inside of self instead of inside the closed curve
+        [foundIntersections sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            if ([obj1 elementIndex1] < [obj2 elementIndex1]) {
+                return NSOrderedAscending;
+            } else if ([obj1 elementIndex1] == [obj2 elementIndex1] &&
+                       [obj1 tValue1] < [obj2 tValue1]) {
+                return NSOrderedAscending;
+            }
+            return NSOrderedDescending;
+        }];
 
         if (![foundIntersections count] && [allFoundIntersections count]) {
             // we accidentally filter out all of the points, because
@@ -366,6 +380,8 @@ static NSInteger segmentCompareCount = 0;
             // that exactly match their flipped state
             foundIntersections = originallyFoundIntersections;
         }
+
+        NSLog(@"filtered2: %@", foundIntersections);
 
         //
         // next i need to filter all of the intersections to
@@ -487,6 +503,10 @@ static NSInteger segmentCompareCount = 0;
                 isInside = isInsideAfterIntersection;
             }
         }
+
+        NSLog(@"filtered3: %@", foundIntersections);
+
+        NSLog(@"didFlipPathNumbers? %d", didFlipPathNumbers);
 
         return [foundIntersections copy];
     }
@@ -1521,6 +1541,30 @@ static NSInteger segmentCompareCount = 0;
     NSArray<DKUIBezierPathShape *> *clippingResult1 = [self uniqueShapesCreatedFromSlicingWithUnclosedPath:scissors];
     NSArray<DKUIBezierPathShape *> *clippingResult2 = [scissors uniqueShapesCreatedFromSlicingWithUnclosedPath:self];
 
+    NSMutableSet<DKUIBezierPathIntersectionPoint*>* intersections1 = [[NSMutableSet alloc] init];
+    NSMutableSet<DKUIBezierPathIntersectionPoint*>* intersections2 = [[NSMutableSet alloc] init];
+
+    for (DKUIBezierPathShape *shape in clippingResult1) {
+        [intersections1 unionSet:[shape intersections]];
+    }
+
+    for (DKUIBezierPathShape *shape in clippingResult2) {
+        [intersections2 unionSet:[shape intersections]];
+    }
+
+    NSSet *filtered1 = [intersections1 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        return [intersections2 containsObject:evaluatedObject];
+    }]];
+    NSSet *filtered2 = [intersections2 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        return [intersections1 containsObject:evaluatedObject];
+    }]];
+
+    NSLog(@"intersections");
+
+
+
+
+
     // Cutting the scissors path with self will return shapes with flipped intersections,
     // so flip them back so that the intersection element/tvalue order matches clippingResult1
     NSMutableArray *flippedResult2 = [NSMutableArray array];
@@ -1535,6 +1579,15 @@ static NSInteger segmentCompareCount = 0;
     for (DKUIBezierPathShape *firstShape in clippingResult1) {
         BOOL didFind = NO;
         for (DKUIBezierPathShape *secondShape in finalShapes) {
+            NSSet<DKUIBezierPathIntersectionPoint*> *inter1 = [firstShape intersections];
+            NSSet<DKUIBezierPathIntersectionPoint*> *inter2 = [secondShape intersections];
+
+            BOOL matchSet1 = [inter1 isSubsetOfSet:inter2];
+            BOOL matchSet2 = [inter2 isSubsetOfSet:inter1];
+
+
+
+
             if ([firstShape isSameShapeAs:secondShape] || [[firstShape fullPath] isEqualToBezierPath:[secondShape fullPath]]) {
                 didFind = YES;
                 break;
@@ -1562,6 +1615,11 @@ static NSInteger segmentCompareCount = 0;
             NSInteger index = [gluedShapes indexOfObjectPassingTest:^BOOL(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
                 return [obj canGlueToShape:shape];
             }];
+
+            if (index != NSNotFound && index != 0) {
+                NSLog(@"gotcha");
+                [[gluedShapes firstObject] canGlueToShape:shape];
+            }
 
             if (index == NSNotFound) {
                 [gluedShapes addObject:shape];

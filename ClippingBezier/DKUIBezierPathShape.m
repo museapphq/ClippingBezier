@@ -98,6 +98,13 @@
         if (!foundSegment) {
             foundAllSegments = NO;
             stop[0] = YES;
+
+            [otherShape.segments enumerateObjectsUsingBlock:^(id obj2, NSUInteger idx, BOOL *stop) {
+                if ([obj1 isEqualToSegment:obj2]) {
+                    foundSegment = YES;
+                    stop[0] = YES;
+                }
+            }];
         }
     }];
     __block BOOL foundAllShapes = YES;
@@ -236,5 +243,21 @@
     return unionShape;
 }
 
+- (NSSet<DKUIBezierPathIntersectionPoint*>*)intersections
+{
+    NSMutableSet<DKUIBezierPathIntersectionPoint*>*intersections = [[NSMutableSet alloc] init];
+
+    for (DKUIBezierPathClippedSegment *segment in segments) {
+        [intersections addObject:[segment startIntersection]];
+        [intersections addObject:[segment endIntersection]];
+    }
+
+    return intersections;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"[Shape: %@]", segments];
+}
 
 @end
