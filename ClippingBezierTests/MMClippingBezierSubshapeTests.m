@@ -2419,8 +2419,8 @@
     UIBezierPath *calcIntersection = [[path1 intersectionWithPath:path2] firstObject];
     UIBezierPath *calcDifference = [[path1 differenceWithPath:path2] firstObject];
 
-    XCTAssertTrue([intersection isEqualToBezierPath:calcIntersection withAccuracy:0.000001], @"shape is very small from the knot");
-    XCTAssertTrue([difference isEqualToBezierPath:calcDifference withAccuracy:0.000001], @"shape is very small from the knot");
+    XCTAssertTrue([intersection isEqualToBezierPath:calcIntersection withAccuracy:0.0001], @"shape is very small from the knot");
+    XCTAssertTrue([difference isEqualToBezierPath:calcDifference withAccuracy:0.0001], @"shape is very small from the knot");
 }
 
 @end

@@ -238,18 +238,18 @@
     [path1 moveToPoint:CGPointMake(543.55434286947127, 292.31630286084135)];
     [path1 addLineToPoint:CGPointMake(542.05434286947127, 297.31630286084135)];
     [path1 addCurveToPoint:CGPointMake(558.81630286084135, 328.44565713052879)
-            controlPoint1:CGPointMake(538.0868964921109, 310.54112411870938)
-            controlPoint2:CGPointMake(545.59148160297332, 324.47821075316836)];
+             controlPoint1:CGPointMake(538.0868964921109, 310.54112411870938)
+             controlPoint2:CGPointMake(545.59148160297332, 324.47821075316836)];
     [path1 addCurveToPoint:CGPointMake(589.94565713052873, 311.68369713915865)
-            controlPoint1:CGPointMake(572.04112411870938, 332.41310350788922)
-            controlPoint2:CGPointMake(585.97821075316836, 324.90851839702668)];
+             controlPoint1:CGPointMake(572.04112411870938, 332.41310350788922)
+             controlPoint2:CGPointMake(585.97821075316836, 324.90851839702668)];
     [path1 addLineToPoint:CGPointMake(591.44565713052873, 306.68369713915865)];
     [path1 addCurveToPoint:CGPointMake(574.68369713915865, 275.55434286947121)
-            controlPoint1:CGPointMake(595.4131035078891, 293.45887588129062)
-            controlPoint2:CGPointMake(587.90851839702668, 279.52178924683164)];
+             controlPoint1:CGPointMake(595.4131035078891, 293.45887588129062)
+             controlPoint2:CGPointMake(587.90851839702668, 279.52178924683164)];
     [path1 addCurveToPoint:CGPointMake(543.55434286947127, 292.31630286084135)
-            controlPoint1:CGPointMake(561.45887588129062, 271.58689649211078)
-            controlPoint2:CGPointMake(547.52178924683164, 279.09148160297332)];
+             controlPoint1:CGPointMake(561.45887588129062, 271.58689649211078)
+             controlPoint2:CGPointMake(547.52178924683164, 279.09148160297332)];
     [path1 closePath];
 
     UIBezierPath *path2 = [UIBezierPath bezierPath];

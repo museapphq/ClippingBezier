@@ -107,6 +107,15 @@ static NSInteger segmentCompareCount = 0;
     } else if ([self isFlat] && ![closedPath isFlat]) {
         path1 = self;
         path2 = closedPath;
+    } else if ([closedPath length] == [self length]) {
+        if ([closedPath hash] < [self hash]) {
+            path1 = closedPath;
+            path2 = self;
+            didFlipPathNumbers = YES;
+        } else {
+            path1 = self;
+            path2 = closedPath;
+        }
     } else if ([closedPath length] > [self length]) {
         path1 = closedPath;
         path2 = self;
