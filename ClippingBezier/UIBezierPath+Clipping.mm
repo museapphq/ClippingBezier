@@ -1545,6 +1545,35 @@ static NSInteger segmentCompareCount = 0;
 
 - (NSArray<DKUIBezierPathShape *> *)allUniqueShapesWithPath:(UIBezierPath *)scissors
 {
+    NSArray<DKUIBezierPathIntersectionPoint *> *intersections = [self findIntersectionsWithClosedPath:scissors andBeginsInside:NULL];
+
+    if (![intersections count]) {
+        // there are no intersections between the paths, which means one fully encompasses the other, or
+        // they are completely outside each other
+        DKUIBezierPathIntersectionPoint *start1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:-1 andTValue:-1 andElementCount1:self.elementCount andElementCount2:scissors.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathIntersectionPoint *end1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:self.elementCount andElementCount2:scissors.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathClippedSegment *segment1 = [DKUIBezierPathClippedSegment clippedPairWithStart:start1 andEnd:end1 andPathSegment:[self copy] fromFullPath:self];
+        DKUIBezierPathShape *shape1 = [[DKUIBezierPathShape alloc] init];
+        [shape1.segments addObject:segment1];
+
+        DKUIBezierPathIntersectionPoint *start2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathIntersectionPoint *end2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:scissors.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathClippedSegment *segment2 = [DKUIBezierPathClippedSegment clippedPairWithStart:start2 andEnd:end2 andPathSegment:[scissors copy] fromFullPath:scissors];
+        DKUIBezierPathShape *shape2 = [[DKUIBezierPathShape alloc] init];
+        [shape1.segments addObject:segment2];
+
+        if ([self containsPoint:[scissors firstPoint]] || [scissors containsPoint:[self firstPoint]]) {
+            // the paths contain each other, return the largest
+            if (self.area > scissors.area) {
+                return @[shape1];
+            } else {
+                return @[shape2];
+            }
+        } else {
+            return @[shape1, shape2];
+        }
+    }
+
     // clip from both perspectives so that we get intersection shapes twice
     // and difference shapes from each path
     NSArray<DKUIBezierPathShape *> *clippingResult1 = [self uniqueShapesCreatedFromSlicingWithUnclosedPath:scissors];
