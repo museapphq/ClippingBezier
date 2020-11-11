@@ -28,6 +28,7 @@
     UIBezierPath *path1;
     UIBezierPath *path2;
     CGPoint tapPoint;
+    NSArray<UIColor *> *randomColors;
 }
 
 - (void)awakeFromNib
@@ -37,6 +38,11 @@
     tapPoint = CGPointNotFound;
     path1 = [UIBezierPath debug1];
     path2 = [UIBezierPath debug2];
+    randomColors = @[];
+
+    for (int i = 0; i < 100; i++) {
+        randomColors = [randomColors arrayByAddingObject:[MMClipView randomColor]];
+    }
 }
 
 - (IBAction)changedPreviewType:(id)sender
@@ -91,7 +97,7 @@
         NSArray<DKUIBezierPathShape *> *shapes = [path1 uniqueShapesCreatedFromSlicingWithUnclosedPath:path2];
 
         for (DKUIBezierPathShape *shape in shapes) {
-            [[MMClipView randomColor] setFill];
+            [[randomColors objectAtIndex:[shapes indexOfObject:shape] % [randomColors count]] setFill];
 
             [[shape fullPath] fill];
         }
@@ -107,7 +113,7 @@
         NSArray<UIBezierPath *> *intersection = [path1 intersectionWithPath:path2];
 
         for (UIBezierPath *path in intersection) {
-            [[MMClipView randomColor] setFill];
+            [[randomColors objectAtIndex:[intersection indexOfObject:path] % [randomColors count]] setFill];
             [path fill];
         }
     } else if (_displayTypeControl.selectedSegmentIndex == 3) {
@@ -122,14 +128,14 @@
         NSArray<UIBezierPath *> *difference = [path1 differenceWithPath:path2];
 
         for (UIBezierPath *path in difference) {
-            [[MMClipView randomColor] setFill];
+            [[randomColors objectAtIndex:[difference indexOfObject:path] % [randomColors count]] setFill];
             [path fill];
         }
     } else if (_displayTypeControl.selectedSegmentIndex == 4) {
         NSArray<UIBezierPath *> *paths = [path1 unionWithPath:path2];
 
         for (UIBezierPath *path in paths) {
-            [[[MMClipView randomColor] colorWithAlphaComponent:.25] setFill];
+            [[[randomColors objectAtIndex:[paths indexOfObject:path] % [randomColors count]] colorWithAlphaComponent:.25] setFill];
 
             [path fill];
         }
