@@ -100,7 +100,14 @@ static NSInteger segmentCompareCount = 0;
     // that we'll return the intersections in the proper path's
     // element/tvalue first
     BOOL didFlipPathNumbers = NO;
-    if ([closedPath isFlat]) {
+    if ([closedPath isFlat] && ![self isFlat]) {
+        path1 = closedPath;
+        path2 = self;
+        didFlipPathNumbers = YES;
+    } else if ([self isFlat] && ![closedPath isFlat]) {
+        path1 = self;
+        path2 = closedPath;
+    } else if ([closedPath length] > [self length]) {
         path1 = closedPath;
         path2 = self;
         didFlipPathNumbers = YES;
@@ -302,6 +309,10 @@ static NSInteger segmentCompareCount = 0;
         // iterate over the intersections and filter out duplicates
         __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
         foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
+            if (obj == lastInter) {
+                // we only have a single intersection
+                return YES;
+            }
             DKUIBezierPathIntersectionPoint *intersection = obj;
             BOOL isDistinctIntersection = ![obj matchesElementEndpointWithIntersection:lastInter];
             CGPoint interLoc = intersection.location1;
@@ -331,6 +342,8 @@ static NSInteger segmentCompareCount = 0;
             }
             if (isDistinctIntersection) {
                 lastInter = obj;
+            } else {
+                [[lastInter matchedIntersections] addObject:obj];
             }
             return isDistinctIntersection;
         }]]];
@@ -875,7 +888,7 @@ static NSInteger segmentCompareCount = 0;
         // so we've already added the appropriate segment for it. there's
         // nothing left on the right hand side of the intersection to use
         // as another segment
-    } else if (![self isClosed] || (countOfIntersections <= 2 && firstIntersectionIsStartOfPath)) {
+    } else if (![self isClosed]) {
         // if the path is closed, then section of the curve from the last intersection
         // wrapped to the first intersection has already been added to the first segment
         // so only add this last segment if it's not closed
@@ -889,12 +902,19 @@ static NSInteger segmentCompareCount = 0;
         // this will merge the two segments and replace them in our output.
         if ([firstIntersectionSegments count]) {
             DKUIBezierPathClippedSegment *firstSeg = [firstIntersectionSegments firstObject];
-            [currentIntersectionSegment appendPathRemovingInitialMoveToPoint:firstSeg.pathSegment];
-            DKUIBezierPathClippedSegment *newSeg = [DKUIBezierPathClippedSegment clippedPairWithStart:firstSeg.startIntersection
-                                                                                               andEnd:firstSeg.endIntersection
-                                                                                       andPathSegment:currentIntersectionSegment
-                                                                                         fromFullPath:firstSeg.fullPath];
-            [firstIntersectionSegments replaceObjectAtIndex:0 withObject:newSeg];
+            if (firstIntersectionIsStartOfPath) {
+                [actingintersectionSegments addObject:[DKUIBezierPathClippedSegment clippedPairWithStart:lastTValue
+                                                                                                  andEnd:firstSeg.startIntersection
+                                                                                          andPathSegment:currentIntersectionSegment
+                                                                                            fromFullPath:self]];
+            } else {
+                [currentIntersectionSegment appendPathRemovingInitialMoveToPoint:firstSeg.pathSegment];
+                DKUIBezierPathClippedSegment *newSeg = [DKUIBezierPathClippedSegment clippedPairWithStart:firstSeg.startIntersection
+                                                                                                   andEnd:firstSeg.endIntersection
+                                                                                           andPathSegment:currentIntersectionSegment
+                                                                                             fromFullPath:firstSeg.fullPath];
+                [firstIntersectionSegments replaceObjectAtIndex:0 withObject:newSeg];
+            }
         }
     }
 

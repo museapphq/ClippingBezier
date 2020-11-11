@@ -195,4 +195,78 @@
     XCTAssert([unionPath isEqualToBezierPath:[finalShapes firstObject] withAccuracy:0.00001]);
 }
 
+- (void)testUnionSimilarValidGlue
+{
+    UIBezierPath *path1 = [UIBezierPath bezierPath];
+    [path1 moveToPoint:CGPointMake(543.554343, 292.316303)];
+    [path1 addLineToPoint:CGPointMake(542.054343, 297.316303)];
+    [path1 addCurveToPoint:CGPointMake(558.816303, 328.445657)
+             controlPoint1:CGPointMake(538.086896, 310.541124)
+             controlPoint2:CGPointMake(545.591482, 324.478211)];
+    [path1 addCurveToPoint:CGPointMake(589.945657, 311.683697)
+             controlPoint1:CGPointMake(572.041124, 332.413104)
+             controlPoint2:CGPointMake(585.978211, 324.908518)];
+    [path1 addLineToPoint:CGPointMake(591.445657, 306.683697)];
+    [path1 addCurveToPoint:CGPointMake(574.683697, 275.554343)
+             controlPoint1:CGPointMake(595.413104, 293.458876)
+             controlPoint2:CGPointMake(587.908518, 279.521789)];
+    [path1 addCurveToPoint:CGPointMake(543.554343, 292.316303)
+             controlPoint1:CGPointMake(561.458876, 271.586896)
+             controlPoint2:CGPointMake(547.521789, 279.091482)];
+    [path1 closePath];
+
+    UIBezierPath *path2 = [UIBezierPath bezierPath];
+    [path2 moveToPoint:CGPointMake(541.114837, 302.106538)];
+    [path2 addLineToPoint:CGPointMake(540.614837, 307.305110)];
+    [path2 addLineToPoint:CGPointMake(538.221375, 332.190273)];
+    [path2 addLineToPoint:CGPointMake(587.991701, 336.977196)];
+    [path2 addLineToPoint:CGPointMake(590.385163, 312.092033)];
+    [path2 addLineToPoint:CGPointMake(590.885163, 306.893462)];
+    [path2 addLineToPoint:CGPointMake(593.278625, 282.008299)];
+    [path2 addLineToPoint:CGPointMake(543.508299, 277.221375)];
+    [path2 addLineToPoint:CGPointMake(541.114837, 302.106538)];
+    [path2 closePath];
+
+    NSArray<UIBezierPath *> *finalShapes = [path1 unionWithPath:path2];
+
+    XCTAssertEqual([finalShapes count], 1);
+}
+
+- (void)testUnionInvalidGlue
+{
+    UIBezierPath *path1 = [UIBezierPath bezierPath];
+    [path1 moveToPoint:CGPointMake(543.55434286947127, 292.31630286084135)];
+    [path1 addLineToPoint:CGPointMake(542.05434286947127, 297.31630286084135)];
+    [path1 addCurveToPoint:CGPointMake(558.81630286084135, 328.44565713052879)
+            controlPoint1:CGPointMake(538.0868964921109, 310.54112411870938)
+            controlPoint2:CGPointMake(545.59148160297332, 324.47821075316836)];
+    [path1 addCurveToPoint:CGPointMake(589.94565713052873, 311.68369713915865)
+            controlPoint1:CGPointMake(572.04112411870938, 332.41310350788922)
+            controlPoint2:CGPointMake(585.97821075316836, 324.90851839702668)];
+    [path1 addLineToPoint:CGPointMake(591.44565713052873, 306.68369713915865)];
+    [path1 addCurveToPoint:CGPointMake(574.68369713915865, 275.55434286947121)
+            controlPoint1:CGPointMake(595.4131035078891, 293.45887588129062)
+            controlPoint2:CGPointMake(587.90851839702668, 279.52178924683164)];
+    [path1 addCurveToPoint:CGPointMake(543.55434286947127, 292.31630286084135)
+            controlPoint1:CGPointMake(561.45887588129062, 271.58689649211078)
+            controlPoint2:CGPointMake(547.52178924683164, 279.09148160297332)];
+    [path1 closePath];
+
+    UIBezierPath *path2 = [UIBezierPath bezierPath];
+    [path2 moveToPoint:CGPointMake(541.1148369272471, 302.10653831396985)];
+    [path2 addLineToPoint:CGPointMake(540.6148369272471, 307.30510974254122)];
+    [path2 addLineToPoint:CGPointMake(538.22137524121695, 332.19027281529412)];
+    [path2 addLineToPoint:CGPointMake(587.99170138672275, 336.97719618735442)];
+    [path2 addLineToPoint:CGPointMake(590.3851630727529, 312.09203311460152)];
+    [path2 addLineToPoint:CGPointMake(590.8851630727529, 306.89346168603015)];
+    [path2 addLineToPoint:CGPointMake(593.27862475878305, 282.00829861327725)];
+    [path2 addLineToPoint:CGPointMake(543.50829861327725, 277.22137524121695)];
+    [path2 addLineToPoint:CGPointMake(541.1148369272471, 302.10653831396985)];
+    [path2 closePath];
+
+    NSArray<UIBezierPath *> *finalShapes = [path1 unionWithPath:path2];
+
+    XCTAssertEqual([finalShapes count], 1);
+}
+
 @end

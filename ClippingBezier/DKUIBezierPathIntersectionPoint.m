@@ -62,13 +62,14 @@
         elementCount2 = _elementCount2;
         lenAtInter1 = _lenAtInter1;
         lenAtInter2 = _lenAtInter2;
+        _matchedIntersections = [[NSMutableSet alloc] init];
     }
     return self;
 }
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f)]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2];
+    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f) %d]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2, mayCrossBoundary];
 }
 
 - (void)dealloc
@@ -103,6 +104,12 @@
     ret.mayCrossBoundary = self.mayCrossBoundary;
     ret.pathLength1 = self.pathLength2;
     ret.pathLength2 = self.pathLength1;
+
+    NSMutableArray<DKUIBezierPathIntersectionPoint *> *flippedPoints = [NSMutableArray array];
+    for (DKUIBezierPathIntersectionPoint *p in self.matchedIntersections) {
+        [flippedPoints addObject:[p flipped]];
+    }
+    [ret.matchedIntersections addObjectsFromArray:flippedPoints];
     return ret;
 }
 
@@ -263,6 +270,10 @@
             [self roundedTValue:self.tValue1] == [self roundedTValue:other.tValue1] &&
             self.elementIndex2 == other.elementIndex2 &&
             [self roundedTValue:self.tValue2] == [self roundedTValue:other.tValue2]) {
+            return YES;
+        } else if ([_matchedIntersections containsObject:other]) {
+            return YES;
+        } else if ([[other matchedIntersections] containsObject:self]) {
             return YES;
         }
     }

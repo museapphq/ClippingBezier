@@ -236,5 +236,21 @@
     return unionShape;
 }
 
+- (NSSet<DKUIBezierPathIntersectionPoint *> *)intersections
+{
+    NSMutableSet<DKUIBezierPathIntersectionPoint *> *intersections = [[NSMutableSet alloc] init];
+
+    for (DKUIBezierPathClippedSegment *segment in segments) {
+        [intersections addObject:[segment startIntersection]];
+        [intersections addObject:[segment endIntersection]];
+    }
+
+    return intersections;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"[Shape: %@]", segments];
+}
 
 @end

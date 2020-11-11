@@ -23,6 +23,7 @@
 - (DKUIBezierPathIntersectionPoint *)endingPoint;
 - (BOOL)isClosed;
 - (UIBezierPath *)fullPath;
+- (NSSet<DKUIBezierPathIntersectionPoint*>*) intersections;
 
 - (BOOL)isSameShapeAs:(DKUIBezierPathShape *)otherShape;
 
