@@ -387,7 +387,12 @@ static NSInteger segmentCompareCount = 0;
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else if (lastInter != obj) {
-                [[lastInter matchedIntersections] addObject:obj];
+                if ([lastInter direction] == [intersection direction]) {
+                    [[lastInter matchedIntersections] addObject:obj];
+                } else {
+                    isDistinctIntersection = YES;
+                    lastInter = obj;
+                }
             }
             return isDistinctIntersection;
         }]]];
