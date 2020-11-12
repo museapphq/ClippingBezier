@@ -317,6 +317,7 @@ static NSInteger segmentCompareCount = 0;
 
         // iterate over the intersections and filter out duplicates
         __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
+        NSMutableSet<DKUIBezierPathIntersectionPoint *> *interToPrune = [NSMutableSet set];
         foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
             if (obj == lastInter) {
                 // we only have a single intersection
@@ -380,6 +381,15 @@ static NSInteger segmentCompareCount = 0;
             // that the path enters/leaves the closed path, then we should keep it.
             BOOL directionChanged = [lastInter direction] != [intersection direction] && [intersection direction] != kDKIntersectionDirectionSame;
 
+            if (!isDistinctIntersection && directionChanged && lastInter.direction == kDKIntersectionDirectionSame) {
+                // if an intersection is kept beacuse it is distinct in distance from the previous, but the direction is the same
+                // only to be followed by a very-nearby left/right direction intersection, then we should use that direction
+                // changing intersection instead.
+                [interToPrune addObject:lastInter];
+                [[intersection matchedIntersections] unionSet:[lastInter matchedIntersections]];
+                [[lastInter matchedIntersections] removeAllObjects];
+            }
+
             isDistinctIntersection = isDistinctIntersection || directionChanged;
 
             // I also need to test if the direction of the boundary crossing is
@@ -389,10 +399,13 @@ static NSInteger segmentCompareCount = 0;
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else if (lastInter != obj) {
-                [[lastInter matchedIntersections] addObject:obj];
+                [[lastInter matchedIntersections] addObject:intersection];
             }
             return isDistinctIntersection;
         }]]];
+
+        // remove any intersections that we should prune
+        [foundIntersections removeObjectsInArray:[interToPrune allObjects]];
 
         if (![foundIntersections count] && [allFoundIntersections count]) {
             // we accidentally filter out all of the points, because
