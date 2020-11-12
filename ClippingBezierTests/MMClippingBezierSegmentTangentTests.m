@@ -1272,9 +1272,9 @@
     NSArray *greenSegments = [redGreenBlueSegs objectAtIndex:1];
     NSArray *blueSegments = [redGreenBlueSegs lastObject];
 
-    XCTAssertEqual([redSegments count], (NSUInteger)2, @"correct number of segments");
+    XCTAssertEqual([redSegments count], (NSUInteger)3, @"correct number of segments");
     XCTAssertEqual([greenSegments count], (NSUInteger)2, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
 
     DKUIBezierPathClippedSegment *redSegment = [redSegments firstObject];
