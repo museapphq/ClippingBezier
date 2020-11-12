@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+typedef CF_ENUM(int32_t, DKIntersectionDirection) {
+    kDKIntersectionDirectionLeft,
+    kDKIntersectionDirectionSame,
+    kDKIntersectionDirectionRight
+};
+
 @interface DKUIBezierPathIntersectionPoint : NSObject
 
 @property(readonly) NSInteger elementIndex1;
@@ -32,7 +38,7 @@
 // might cross from outside to inside the closed shape
 // this is only a hint, and should be verified by the segment
 @property(readonly) BOOL mayCrossBoundary;
-@property(nonatomic, strong) NSMutableSet<DKUIBezierPathIntersectionPoint*>* matchedIntersections;
+@property(nonatomic, strong) NSMutableSet<DKUIBezierPathIntersectionPoint *> *matchedIntersections;
 
 + (id)intersectionAtElementIndex:(NSInteger)index1 andTValue:(CGFloat)tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)tValue2 andElementCount1:(NSInteger)elementCount1 andElementCount2:(NSInteger)elementCount2 andLengthUntilPath1Loc:(CGFloat)len1 andLengthUntilPath2Loc:(CGFloat)len2;
 
