@@ -36,8 +36,8 @@
     [super awakeFromNib];
 
     tapPoint = CGPointNotFound;
-    path1 = [UIBezierPath union1];
-    path2 = [UIBezierPath union2];
+    path1 = [UIBezierPath debug1];
+    path2 = [UIBezierPath debug2];
     randomColors = @[];
 
     for (int i = 0; i < 100; i++) {
