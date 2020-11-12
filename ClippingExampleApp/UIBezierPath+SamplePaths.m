@@ -186,19 +186,24 @@
 + (UIBezierPath *)debug1
 {
     UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(150, 200)];
-    // first V through intersection, creates point tangent
-    [path addLineToPoint:CGPointMake(250, 300)];
-    [path addLineToPoint:CGPointMake(300, 200)];
-    // continue top
-    [path addLineToPoint:CGPointMake(550, 200)];
-    [path addLineToPoint:CGPointMake(550, 400)];
-    // second vertical V through intersection
-    [path addLineToPoint:CGPointMake(500, 400)];
-    [path addLineToPoint:CGPointMake(450, 300)];
-    [path addLineToPoint:CGPointMake(400, 400)];
-    [path addLineToPoint:CGPointMake(150, 400)];
-    [path addLineToPoint:CGPointMake(150, 200)];
+    [path moveToPoint:CGPointMake(434, 139)];
+    [path addCurveToPoint:CGPointMake(405, 136) controlPoint1:CGPointMake(419.31439, 138.24297) controlPoint2:CGPointMake(412.20261, 136.55988)];
+    [path addCurveToPoint:CGPointMake(334, 159) controlPoint1:CGPointMake(379.15393, 131.06366) controlPoint2:CGPointMake(353.60638, 143.34953)];
+    [path addCurveToPoint:CGPointMake(268, 242) controlPoint1:CGPointMake(308.45203, 183.46036) controlPoint2:CGPointMake(283.20477, 209.47534)];
+    [path addCurveToPoint:CGPointMake(233, 481) controlPoint1:CGPointMake(228.24142, 315.83215) controlPoint2:CGPointMake(230.29984, 399.91275)];
+    [path addCurveToPoint:CGPointMake(257, 553) controlPoint1:CGPointMake(234.57622, 506.81796) controlPoint2:CGPointMake(243.05113, 531.66156)];
+    [path addCurveToPoint:CGPointMake(302, 585) controlPoint1:CGPointMake(264.3107, 570.68347) controlPoint2:CGPointMake(281.87143, 586.08862)];
+    [path addCurveToPoint:CGPointMake(410, 569) controlPoint1:CGPointMake(338.89066, 591.18964) controlPoint2:CGPointMake(375.0018, 578.1427)];
+    [path addCurveToPoint:CGPointMake(541, 561) controlPoint1:CGPointMake(448.95407, 567.50714) controlPoint2:CGPointMake(501.26468, 539.41791)];
+    [path addCurveToPoint:CGPointMake(560, 569) controlPoint1:CGPointMake(545.36719, 568.49097) controlPoint2:CGPointMake(553.87787, 565.18091)];
+    [path addCurveToPoint:CGPointMake(565, 406) controlPoint1:CGPointMake(583.72577, 524.01349) controlPoint2:CGPointMake(580.91907, 458.31393)];
+    [path addCurveToPoint:CGPointMake(520, 377) controlPoint1:CGPointMake(555.8418, 389.33487) controlPoint2:CGPointMake(538.3692, 378.92123)];
+    [path addCurveToPoint:CGPointMake(426, 362) controlPoint1:CGPointMake(489.28839, 369.62112) controlPoint2:CGPointMake(455.92944, 373.30957)];
+    [path addCurveToPoint:CGPointMake(409, 344) controlPoint1:CGPointMake(418.1489, 358.60522) controlPoint2:CGPointMake(412.04929, 351.8891)];
+    [path addCurveToPoint:CGPointMake(422, 257) controlPoint1:CGPointMake(407.73981, 314.5719) controlPoint2:CGPointMake(403.55063, 283.01636)];
+    [path addCurveToPoint:CGPointMake(487, 159) controlPoint1:CGPointMake(433.01163, 217.17958) controlPoint2:CGPointMake(472.03311, 196.10237)];
+    [path addLineToPoint:CGPointMake(487, 159)];
+    [path addLineToPoint:CGPointMake(434, 139)];
     [path closePath];
 
     return path;
@@ -207,8 +212,22 @@
 + (UIBezierPath *)debug2
 {
     UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(100, 200)];
-    [path addLineToPoint:CGPointMake(600, 200)];
+    [path moveToPoint:CGPointMake(210.500000, 386.000000)];
+    [path addLineToPoint:CGPointMake(218.500000, 376.000000)];
+    [path addCurveToPoint:CGPointMake(229.500000, 376.000000)
+            controlPoint1:CGPointMake(210.500000, 376.000000)
+            controlPoint2:CGPointMake(229.500000, 376.000000)];
+    [path addCurveToPoint:CGPointMake(290, 360)
+            controlPoint1:CGPointMake(229.500000, 376.000000)
+            controlPoint2:CGPointMake(290, 360)];
+
+    [path addCurveToPoint:CGPointMake(500, 560)
+            controlPoint1:CGPointMake(290, 360)
+            controlPoint2:CGPointMake(500, 560)];
+
+    [path addCurveToPoint:CGPointMake(750, 750)
+            controlPoint1:CGPointMake(500, 560)
+            controlPoint2:CGPointMake(720, 750)];
 
     return path;
 }
