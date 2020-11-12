@@ -150,6 +150,23 @@
     XCTAssert([unionPath isEqualToBezierPath:[finalShapes firstObject] withAccuracy:0.00001]);
 }
 
+- (void)testUnionToHole2
+{
+    UIBezierPath *path1 = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, 100, 100)];
+    UIBezierPath *path2 = [UIBezierPath bezierPathWithRect:CGRectMake(25, 25, 50, 50)];
+
+    NSArray<UIBezierPath *> *combined1 = [path1 unionWithPath:path2];
+    NSArray<UIBezierPath *> *combined2 = [path1 unionWithPath:[path2 bezierPathByReversingPath]];
+    NSArray<UIBezierPath *> *combined3 = [path2 unionWithPath:path1];
+
+    XCTAssertEqual([combined1 count], 1);
+    XCTAssertEqual([combined2 count], 1);
+    XCTAssertEqual([combined3 count], 1);
+    XCTAssert([path1 isEqualToBezierPath:[combined1 firstObject] withAccuracy:0.00001]);
+    XCTAssert([path1 isEqualToBezierPath:[combined2 firstObject] withAccuracy:0.00001]);
+    XCTAssert([path1 isEqualToBezierPath:[combined3 firstObject] withAccuracy:0.00001]);
+}
+
 - (void)testUnionToHole
 {
     UIBezierPath *path1 = [UIBezierPath bezierPath];
@@ -177,20 +194,23 @@
     XCTAssertEqual([finalShapes count], 1);
 
     UIBezierPath *unionPath = [UIBezierPath bezierPath];
-    [unionPath moveToPoint:CGPointMake(70.000000, 80.000000)];
-    [unionPath addLineToPoint:CGPointMake(70.000000, 20.000000)];
-    [unionPath addLineToPoint:CGPointMake(50.000000, 20.000000)];
-    [unionPath addLineToPoint:CGPointMake(50.000000, 80.000000)];
-    [unionPath addLineToPoint:CGPointMake(70.000000, 80.000000)];
-    [unionPath addLineToPoint:CGPointMake(100.000000, 80.000000)];
-    [unionPath addLineToPoint:CGPointMake(100.000000, 100.000000)];
-    [unionPath addLineToPoint:CGPointMake(0.000000, 100.000000)];
-    [unionPath addLineToPoint:CGPointMake(0.000000, 0.000000)];
-    [unionPath addLineToPoint:CGPointMake(100.000000, 0.000000)];
-    [unionPath addLineToPoint:CGPointMake(100.000000, 20.000000)];
-    [unionPath addLineToPoint:CGPointMake(100.000000, 20.000000)];
-    [unionPath addLineToPoint:CGPointMake(80.000000, 20.000000)];
-    [unionPath addLineToPoint:CGPointMake(80.000000, 80.000000)];
+    [unionPath moveToPoint:CGPointMake(80.00000000000001, 80)];
+    [unionPath addLineToPoint:CGPointMake(100, 80)];
+    [unionPath addLineToPoint:CGPointMake(100, 100)];
+    [unionPath addLineToPoint:CGPointMake(0, 100)];
+    [unionPath addLineToPoint:CGPointMake(0, 0)];
+    [unionPath addLineToPoint:CGPointMake(100, 0)];
+    [unionPath addLineToPoint:CGPointMake(100, 20)];
+    [unionPath addLineToPoint:CGPointMake(100, 20)];
+    [unionPath addLineToPoint:CGPointMake(80, 20)];
+    [unionPath addLineToPoint:CGPointMake(80, 80)];
+    [unionPath closePath];
+    [unionPath moveToPoint:CGPointMake(70, 80)];
+    [unionPath addLineToPoint:CGPointMake(70, 20)];
+    [unionPath addLineToPoint:CGPointMake(50, 20)];
+    [unionPath addLineToPoint:CGPointMake(50, 80)];
+    [unionPath addLineToPoint:CGPointMake(70, 80)];
+    [unionPath closePath];
 
     XCTAssert([unionPath isEqualToBezierPath:[finalShapes firstObject] withAccuracy:0.00001]);
 }

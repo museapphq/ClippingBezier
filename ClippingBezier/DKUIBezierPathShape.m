@@ -233,6 +233,33 @@
     [[unionShape holes] addObjectsFromArray:[self holes]];
     [[unionShape holes] addObjectsFromArray:[otherShape holes]];
 
+    // gluing might create a new hole
+    NSMutableArray<DKUIBezierPathClippedSegment *> *segs = [[unionShape segments] mutableCopy];
+    NSMutableArray<DKUIBezierPathShape *> *shapes = [NSMutableArray array];
+    [shapes addObject:[[DKUIBezierPathShape alloc] init]];
+
+    while (![[shapes lastObject] isClosed] && [segs count]) {
+        [[[shapes lastObject] segments] addObject:[segs firstObject]];
+        [segs removeObjectAtIndex:0];
+
+        if ([segs count] && [[shapes lastObject] isClosed]) {
+            // still more segments to process
+            [shapes addObject:[[DKUIBezierPathShape alloc] init]];
+        }
+    }
+
+    [shapes sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
+        return [[obj1 fullPath] containsPoint:[[[[obj2 segments] firstObject] startIntersection] location1]] ? NSOrderedAscending : NSOrderedDescending;
+    }];
+
+    // remove our shell
+    [shapes removeObjectAtIndex:0];
+
+    for (DKUIBezierPathShape *subshape in shapes) {
+        [unionShape.segments removeObjectsInArray:[subshape segments]];
+        [unionShape.holes addObject:subshape];
+    }
+
     return unionShape;
 }
 

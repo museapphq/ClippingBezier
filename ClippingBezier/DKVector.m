@@ -132,7 +132,8 @@
     return CGPointMake(x2, y2);
 }
 
-- (CGFloat)angleBetween:(DKVector *)otherVector
+/// Returns the angle of the input vector with respect to this vector.
+- (CGFloat)angleWithRespectTo:(DKVector *)otherVector
 {
     // angle with +ve x-axis, in the range (−π, π]
     float thetaA = atan2(otherVector.x, otherVector.y);
@@ -153,6 +154,31 @@
     //    CGFloat angleBetween = acosf(scaler / (self.magnitude * otherVector.magnitude));
     //    return roundf(angleBetween * pow(10, 6)) / pow(10, 6);
 }
+
+- (CGFloat)dot:(DKVector *)other
+{
+    return self.x * other.x + self.y * other.y;
+}
+
+- (DKVector *)scale:(CGFloat)c
+{
+    return [DKVector vectorWithX:x * c andY:y * c];
+}
+
+- (DKVector *)projectedOnto:(DKVector *)v
+{
+    CGFloat dp = [v dot:self];
+    CGFloat vv = [v dot:v];
+    CGFloat c = dp / vv;
+
+    return [v scale:c];
+}
+
+- (DKVector *)add:(DKVector *)v
+{
+    return [DKVector vectorWithX:x + v.x andY:y + v.y];
+}
+
 
 - (CGPoint)asCGPoint
 {
