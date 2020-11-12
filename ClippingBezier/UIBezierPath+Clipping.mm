@@ -306,6 +306,7 @@ static NSInteger segmentCompareCount = 0;
 
         // iterate over the intersections and filter out duplicates
         __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
+        NSMutableSet<DKUIBezierPathIntersectionPoint *> *interToPrune = [NSMutableSet set];
         foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
             DKUIBezierPathIntersectionPoint *intersection = obj;
             BOOL isDistinctIntersection = ![obj matchesElementEndpointWithIntersection:lastInter];
@@ -365,6 +366,15 @@ static NSInteger segmentCompareCount = 0;
             // that the path enters/leaves the closed path, then we should keep it.
             BOOL directionChanged = [lastInter direction] != [intersection direction] && [intersection direction] != kDKIntersectionDirectionSame;
 
+            if (!isDistinctIntersection && directionChanged && lastInter.direction == kDKIntersectionDirectionSame) {
+                // if an intersection is kept beacuse it is distinct in distance from the previous, but the direction is the same
+                // only to be followed by a very-nearby left/right direction intersection, then we should use that direction
+                // changing intersection instead.
+                [interToPrune addObject:lastInter];
+                [[intersection matchedIntersections] unionSet:[lastInter matchedIntersections]];
+                [[lastInter matchedIntersections] removeAllObjects];
+            }
+
             isDistinctIntersection = isDistinctIntersection || directionChanged;
 
             // I also need to test if the direction of the boundary crossing is
@@ -374,10 +384,13 @@ static NSInteger segmentCompareCount = 0;
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else if (lastInter != obj) {
-                [[lastInter matchedIntersections] addObject:obj];
+                [[lastInter matchedIntersections] addObject:intersection];
             }
             return isDistinctIntersection;
         }]]];
+
+        // remove any intersections that we should prune
+        [foundIntersections removeObjectsInArray:[interToPrune allObjects]];
 
         // make sure we have the points sorted by the intersection location
         // inside of self instead of inside the closed curve
@@ -954,7 +967,7 @@ static NSInteger segmentCompareCount = 0;
         // so we've already added the appropriate segment for it. there's
         // nothing left on the right hand side of the intersection to use
         // as another segment
-    } else if (![self isClosed] || (countOfIntersections <= 2 && firstIntersectionIsStartOfPath)) {
+    } else if (![self isClosed]) {
         // if the path is closed, then section of the curve from the last intersection
         // wrapped to the first intersection has already been added to the first segment
         // so only add this last segment if it's not closed
@@ -968,12 +981,19 @@ static NSInteger segmentCompareCount = 0;
         // this will merge the two segments and replace them in our output.
         if ([firstIntersectionSegments count]) {
             DKUIBezierPathClippedSegment *firstSeg = [firstIntersectionSegments firstObject];
-            [currentIntersectionSegment appendPathRemovingInitialMoveToPoint:firstSeg.pathSegment];
-            DKUIBezierPathClippedSegment *newSeg = [DKUIBezierPathClippedSegment clippedPairWithStart:firstSeg.startIntersection
-                                                                                               andEnd:firstSeg.endIntersection
-                                                                                       andPathSegment:currentIntersectionSegment
-                                                                                         fromFullPath:firstSeg.fullPath];
-            [firstIntersectionSegments replaceObjectAtIndex:0 withObject:newSeg];
+            if (firstIntersectionIsStartOfPath) {
+                [actingintersectionSegments addObject:[DKUIBezierPathClippedSegment clippedPairWithStart:lastTValue
+                                                                                                  andEnd:firstSeg.startIntersection
+                                                                                          andPathSegment:currentIntersectionSegment
+                                                                                            fromFullPath:self]];
+            } else {
+                [currentIntersectionSegment appendPathRemovingInitialMoveToPoint:firstSeg.pathSegment];
+                DKUIBezierPathClippedSegment *newSeg = [DKUIBezierPathClippedSegment clippedPairWithStart:firstSeg.startIntersection
+                                                                                                   andEnd:firstSeg.endIntersection
+                                                                                           andPathSegment:currentIntersectionSegment
+                                                                                             fromFullPath:firstSeg.fullPath];
+                [firstIntersectionSegments replaceObjectAtIndex:0 withObject:newSeg];
+            }
         }
     }
 
