@@ -88,7 +88,11 @@
         NSArray *intersections = [path1 findIntersectionsWithClosedPath:path2 andBeginsInside:nil];
 
         for (DKUIBezierPathIntersectionPoint *intersection in intersections) {
-            [[UIColor redColor] setFill];
+            if ([intersection mayCrossBoundary]) {
+                [[UIColor redColor] setFill];
+            } else {
+                [[UIColor blueColor] setFill];
+            }
             CGPoint p = intersection.location1;
 
             [[UIBezierPath bezierPathWithArcCenter:p radius:radius / scale startAngle:0 endAngle:2 * M_PI clockwise:YES] fill];
