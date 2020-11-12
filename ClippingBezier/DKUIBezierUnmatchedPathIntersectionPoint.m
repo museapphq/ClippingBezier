@@ -71,6 +71,7 @@ static NSUInteger uniqueIntersectionIdGeneration = 0;
     ret.bez2[2] = self.bez1[2];
     ret.bez2[3] = self.bez1[3];
     ret.mayCrossBoundary = self.mayCrossBoundary;
+    ret.direction = self.direction;
     ret.pathLength1 = self.pathLength2;
     ret.pathLength2 = self.pathLength1;
     [ret setUniqueId:self.uniqueUnmatchedIntersectionId];
