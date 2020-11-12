@@ -159,7 +159,7 @@
  */
 - (CGFloat)angleBetween:(DKUIBezierPathClippedSegment *)otherInter
 {
-    return [[self endVector] angleBetween:[otherInter startVector]];
+    return [[self endVector] angleWithRespectTo:[otherInter startVector]];
 }
 
 - (DKVector *)endVector

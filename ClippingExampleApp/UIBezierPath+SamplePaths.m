@@ -295,4 +295,34 @@
     return path;
 }
 
++ (UIBezierPath *)union1
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(100, 20)];
+    [path addLineToPoint:CGPointMake(50, 20)];
+    [path addLineToPoint:CGPointMake(50, 80)];
+    [path addLineToPoint:CGPointMake(100, 80)];
+    [path addLineToPoint:CGPointMake(100, 100)];
+    [path addLineToPoint:CGPointMake(0, 100)];
+    [path addLineToPoint:CGPointMake(0, 0)];
+    [path addLineToPoint:CGPointMake(100, 0)];
+    [path addLineToPoint:CGPointMake(100, 20)];
+    [path closePath];
+
+    return path;
+}
+
++ (UIBezierPath *)union2
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(70, 10)];
+    [path addLineToPoint:CGPointMake(80, 10)];
+    [path addLineToPoint:CGPointMake(80, 90)];
+    [path addLineToPoint:CGPointMake(70, 90)];
+    [path addLineToPoint:CGPointMake(70, 10)];
+    [path closePath];
+
+    return path;
+}
+
 @end

@@ -44,7 +44,15 @@
 
 - (CGPoint)mirrorPoint:(CGPoint)point aroundPoint:(CGPoint)startPoint;
 
-- (CGFloat)angleBetween:(DKVector *)otherVector;
+- (CGFloat)angleWithRespectTo:(DKVector *)otherVector;
+
+- (DKVector *)projectedOnto:(DKVector *)other;
+
+- (DKVector *)add:(DKVector *)v;
+
+- (DKVector *)scale:(CGFloat)c;
+
+- (CGFloat)dot:(DKVector *)other;
 
 - (CGPoint)asCGPoint;
 @end

@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIBezierPath *)debug1;
 + (UIBezierPath *)debug2;
 
++ (UIBezierPath *)union1;
++ (UIBezierPath *)union2;
+
 @end
 
 NS_ASSUME_NONNULL_END

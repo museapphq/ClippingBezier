@@ -336,6 +336,37 @@ static NSInteger segmentCompareCount = 0;
                     isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
             }
+
+            // Using the following tangents, determine if the intersection is entering or leaving the shape
+            // or if the intersection is tangent to the shape.
+            CGPoint shapeCGTan = [closedPath tangentOnPathAtElement:intersection.elementIndex2 andTValue:intersection.tValue2];
+            CGPoint myCGTan = [self tangentOnPathAtElement:intersection.elementIndex1 andTValue:intersection.tValue1];
+
+            DKVector *shapeTan = [DKVector vectorWithX:shapeCGTan.x andY:shapeCGTan.y];
+            DKVector *myTan = [DKVector vectorWithX:myCGTan.x andY:myCGTan.y];
+            CGFloat angle = [myTan angleWithRespectTo:shapeTan];
+            const CGFloat marginOfErr = 0.00001;
+
+            if (angle < -marginOfErr) {
+                // the angle is negative, so myTan is aiming to the right of shapeTan
+                // our path is moving /outside/ => /inside/ of closedPath
+                [intersection setDirection:kDKIntersectionDirectionRight];
+            } else if (angle > marginOfErr) {
+                // the angle is positive, so myTan is aiming to the left of shapeTan
+                [intersection setDirection:kDKIntersectionDirectionLeft];
+                // our path is moving /inside/ => /outside/ of closedPath
+            } else if (angle >= -marginOfErr && angle <= marginOfErr) {
+                // our path is tangent to the closed path, and we're in the same direction
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            } else if (angle >= M_PI - marginOfErr || angle <= -M_PI + marginOfErr) {
+                // our path is tangent to the closed path, and we're in the opposite direction
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            } else {
+                // an unknown error occurred
+                assert("angle should be between -M_PI and M_PI");
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            }
+
             // I also need to test if the direction of the boundary crossing is
             // the same direction. if they both go from outside->inside or inside->outside
             // then they're duplicate. otherwise it's a very very close out -> in -> out crossing
@@ -529,6 +560,26 @@ static NSInteger segmentCompareCount = 0;
     return [NSArray array];
 }
 
+- (CGFloat)angleBetween:(CGVector)v1 and:(CGVector)v2
+{
+    if ((v1.dx == 0 && v1.dy == 0) || (v2.dx == 0 && v2.dy == 0)) {
+        return NAN;
+    }
+    // angle with +ve x-axis, in the range (−π, π]
+    float thetaA = atan2(v2.dx, v2.dy);
+    float thetaB = atan2(v1.dx, v1.dy);
+
+    float thetaAB = thetaB - thetaA;
+
+    // get in range (−π, π]
+    while (thetaAB <= -M_PI)
+        thetaAB += 2 * M_PI;
+
+    while (thetaAB > M_PI)
+        thetaAB -= 2 * M_PI;
+
+    return thetaAB;
+}
 
 #pragma mark - Segment Finding
 
@@ -1568,7 +1619,7 @@ static NSInteger segmentCompareCount = 0;
         DKUIBezierPathIntersectionPoint *end2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:scissors.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
         DKUIBezierPathClippedSegment *segment2 = [DKUIBezierPathClippedSegment clippedPairWithStart:start2 andEnd:end2 andPathSegment:[scissors copy] fromFullPath:scissors];
         DKUIBezierPathShape *shape2 = [[DKUIBezierPathShape alloc] init];
-        [shape1.segments addObject:segment2];
+        [shape2.segments addObject:segment2];
 
         if ([self containsPoint:[scissors firstPoint]] || [scissors containsPoint:[self firstPoint]]) {
             // the paths contain each other, return the largest
@@ -1624,10 +1675,6 @@ static NSInteger segmentCompareCount = 0;
         for (DKUIBezierPathShape *secondShape in finalShapes) {
             NSSet<DKUIBezierPathIntersectionPoint *> *inter1 = [firstShape intersections];
             NSSet<DKUIBezierPathIntersectionPoint *> *inter2 = [secondShape intersections];
-
-            BOOL matchSet1 = [inter1 isSubsetOfSet:inter2];
-            BOOL matchSet2 = [inter2 isSubsetOfSet:inter1];
-
 
             if ([firstShape isSameShapeAs:secondShape] || [[firstShape fullPath] isEqualToBezierPath:[secondShape fullPath]]) {
                 didFind = YES;
@@ -1948,9 +1995,9 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
                     //                        NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
-                    if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
+                    if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                         // never allow exactly backwards tangents
-                    } else if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
+                    } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
                         // never allow exactly backwards tangents
                     } else {
                         currentSegmentCandidate = blueSeg;
@@ -1962,8 +2009,8 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *newPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
                     //                        NSLog(@"angle: %f vs %f", [currSeg angleBetween:currPoss], [currSeg angleBetween:newPoss]);
                     if (gt) {
-                        if ([currSeg angleBetween:newPoss] > [currSeg angleBetween:currPoss]) {
-                            if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
+                        if ([currSeg angleWithRespectTo:newPoss] > [currSeg angleWithRespectTo:currPoss]) {
+                            if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
                                 // never allow exactly backwards tangents
                             } else {
                                 currentSegmentCandidate = blueSeg;
@@ -1971,8 +2018,8 @@ static NSInteger segmentCompareCount = 0;
                             }
                         }
                     } else {
-                        if ([currSeg angleBetween:newPoss] < [currSeg angleBetween:currPoss]) {
-                            if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
+                        if ([currSeg angleWithRespectTo:newPoss] < [currSeg angleWithRespectTo:currPoss]) {
+                            if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
                                 // never allow exactly backwards tangents
                             } else {
                                 currentSegmentCandidate = blueSeg;
@@ -1999,9 +2046,9 @@ static NSInteger segmentCompareCount = 0;
                 DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                 DKVector *currPoss = [[redSeg pathSegment] tangentNearStart].tangent;
                 //                    NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
-                if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
+                if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                     // never allow exactly backwards tangents
-                } else if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
+                } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
                     // never allow exactly backwards tangents
                 } else {
                     currentSegmentCandidate = redSeg;
@@ -2012,8 +2059,8 @@ static NSInteger segmentCompareCount = 0;
                 DKVector *currPoss = [[currentSegmentCandidate pathSegment] tangentNearStart].tangent;
                 DKVector *newPoss = [[redSeg pathSegment] tangentNearStart].tangent;
                 if (gt) {
-                    if ([currSeg angleBetween:newPoss] >= [currSeg angleBetween:currPoss]) {
-                        if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
+                    if ([currSeg angleWithRespectTo:newPoss] >= [currSeg angleWithRespectTo:currPoss]) {
+                        if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
                             // never allow exactly backwards tangents
                         } else {
                             currentSegmentCandidate = redSeg;
@@ -2021,8 +2068,8 @@ static NSInteger segmentCompareCount = 0;
                         }
                     }
                 } else {
-                    if ([currSeg angleBetween:newPoss] <= [currSeg angleBetween:currPoss]) {
-                        if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
+                    if ([currSeg angleWithRespectTo:newPoss] <= [currSeg angleWithRespectTo:currPoss]) {
+                        if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
                             // never allow exactly backwards tangents
                         } else {
                             currentSegmentCandidate = redSeg;
