@@ -185,17 +185,15 @@
 
 + (UIBezierPath *)debug1
 {
-    UIBezierPath *path = [UIBezierPath bezierPathWithRect:CGRectMake(100, 100, 600, 400)];
-    [path appendPath:[[UIBezierPath bezierPathWithOvalInRect:CGRectMake(150, 150, 200, 200)] bezierPathByReversingPath]];
+    UIBezierPath *path = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    path = [path bezierPathByReversingPath];
 
     return path;
 }
 
 + (UIBezierPath *)debug2
 {
-    UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(150, 800)];
-    [path addLineToPoint:CGPointMake(150, 50)];
+    UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
 
     return path;
 }

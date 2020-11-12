@@ -109,30 +109,6 @@
     XCTAssertTrue([self checkTanPoint:[UIBezierPath distance:CGPointMake(200, 100) p2:tan.point] isLessThan:[UIBezierPath maxDistForEndPointTangents]], @"good rounding error for tangent ends");
 }
 
-- (void)testCircleThroughReversedRectangleFirstSegmentTangent
-{
-    // here, the scissor is a circle that is contained with in a square shape
-    // the square wraps around the outside of the circle
-    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
-    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
-    shapePath = [shapePath bezierPathByReversingPath];
-
-    XCTAssertTrue(![shapePath isClockwise], @"shape is clockwise");
-
-    NSArray *allSegments = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
-    NSArray *redSegments = [allSegments firstObject];
-    NSArray *blueSegments = [allSegments lastObject];
-
-    for (DKUIBezierPathClippedSegment *redSegment in redSegments) {
-        DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
-                                                                                                      forRed:redSegments
-                                                                                                     andBlue:blueSegments
-                                                                                                  lastWasRed:YES
-                                                                                                        comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
-    }
-}
-
 - (void)testIntersectionAtT1
 {
     UIBezierPath *scissorPath = [UIBezierPath bezierPath];
@@ -732,31 +708,6 @@
     [shapePath addLineToPoint:CGPointMake(150, 200)];
     [shapePath closePath];
     shapePath = [shapePath bezierPathByReversingPath];
-
-    XCTAssertTrue(![shapePath isClockwise], @"shape is correct direction");
-
-    NSArray *allSegments = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
-    NSArray *redSegments = [allSegments firstObject];
-    NSArray *blueSegments = [allSegments lastObject];
-
-    // the forward path takes right turns, like normal...
-    for (DKUIBezierPathClippedSegment *redSegment in redSegments) {
-        DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
-                                                                                                      forRed:redSegments
-                                                                                                     andBlue:blueSegments
-                                                                                                  lastWasRed:YES
-                                                                                                        comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
-    }
-}
-
-- (void)testCircleThroughReversedRectangle
-{
-    // here, the scissor is a circle that is contained with in a square shape
-    // the square wraps around the outside of the circle
-    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
-    shapePath = [shapePath bezierPathByReversingPath];
-    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
 
     XCTAssertTrue(![shapePath isClockwise], @"shape is correct direction");
 
