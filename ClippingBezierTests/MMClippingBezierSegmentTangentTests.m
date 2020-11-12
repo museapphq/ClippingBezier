@@ -1174,7 +1174,7 @@
 
     XCTAssertEqual([redSegments count], (NSUInteger)3, @"correct number of segments");
     XCTAssertEqual([greenSegments count], (NSUInteger)2, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
 
     DKUIBezierPathClippedSegment *redSegment = [redSegments firstObject];
@@ -1187,8 +1187,8 @@
                                                                                                  andBlue:blueSegments
                                                                                               lastWasRed:YES
                                                                                                     comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] == 0, @"angle is tangent");
-    XCTAssertTrue([redSegments containsObject:currentSegmentCandidate], @"best match is blue");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    XCTAssertTrue([blueSegments containsObject:currentSegmentCandidate], @"best match is blue");
 }
 
 

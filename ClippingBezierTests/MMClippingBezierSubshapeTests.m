@@ -1650,27 +1650,27 @@
 
     XCTAssertEqual([redSegments count], (NSUInteger)3, @"correct number of segments");
     XCTAssertEqual([greenSegments count], (NSUInteger)2, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     NSArray *redBlueSegs = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
     redSegments = [redBlueSegs firstObject];
     blueSegments = [redBlueSegs lastObject];
 
     XCTAssertEqual([redSegments count], (NSUInteger)6, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     NSArray *subShapePaths = [shapePath shapeShellsAndSubshapesCreatedFromSlicingWithUnclosedPath:scissorPath];
     NSArray *foundShapes = [subShapePaths firstObject];
 
-    XCTAssertEqual([foundShapes count], (NSUInteger)6, @"found intersection");
+    XCTAssertEqual([foundShapes count], (NSUInteger)4, @"found intersection");
 
     for (DKUIBezierPathShape *shape in foundShapes) {
         XCTAssertTrue([shape isClosed], @"shape is closed");
     }
 
-    XCTAssertEqual([[[foundShapes objectAtIndex:0] segments] count], (NSUInteger)5, @"found closed shape");
-    XCTAssertEqual([[[foundShapes objectAtIndex:1] segments] count], (NSUInteger)5, @"found closed shape");
-    XCTAssertEqual([[[foundShapes objectAtIndex:2] segments] count], (NSUInteger)5, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:0] segments] count], (NSUInteger)4, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:1] segments] count], (NSUInteger)4, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:2] segments] count], (NSUInteger)4, @"found closed shape");
     XCTAssertEqual([[[foundShapes objectAtIndex:3] segments] count], (NSUInteger)4, @"found closed shape");
 
     NSArray *uniqueShapes = [shapePath uniqueShapesCreatedFromSlicingWithUnclosedPath:scissorPath];

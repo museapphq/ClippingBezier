@@ -305,15 +305,15 @@ static NSInteger segmentCompareCount = 0;
         NSArray *allFoundIntersections = foundIntersections;
 
         // iterate over the intersections and filter out duplicates
-        __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
+        __block DKUIBezierPathIntersectionPoint *lastInter = nil;
         NSMutableSet<DKUIBezierPathIntersectionPoint *> *interToPrune = [NSMutableSet set];
         foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
             DKUIBezierPathIntersectionPoint *intersection = obj;
-            BOOL isDistinctIntersection = ![obj matchesElementEndpointWithIntersection:lastInter];
+            BOOL isDistinctIntersection = !lastInter || ![obj matchesElementEndpointWithIntersection:lastInter];
             CGPoint interLoc = intersection.location1;
-            CGPoint lastLoc = lastInter.location1;
+            CGPoint lastLoc = lastInter ? lastInter.location1 : CGPointNotFound;
             CGPoint interLoc2 = intersection.location2;
-            CGPoint lastLoc2 = lastInter.location2;
+            CGPoint lastLoc2 = lastInter ? lastInter.location2 : CGPointNotFound;
             if (isDistinctIntersection) {
                 if ((ABS(interLoc.x - lastLoc.x) < kUIBezierClosenessPrecision &&
                      ABS(interLoc.y - lastLoc.y) < kUIBezierClosenessPrecision) ||

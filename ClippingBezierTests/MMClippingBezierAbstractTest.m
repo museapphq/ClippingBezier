@@ -141,7 +141,7 @@
 - (CGFloat)round:(CGFloat)val to:(int)digits
 {
     double factor = pow(10, digits);
-    return round(val * factor) / factor;
+    return roundf(val * factor) / factor;
 }
 
 - (BOOL)point:(CGPoint)p1 isNearTo:(CGPoint)p2

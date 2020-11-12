@@ -425,8 +425,8 @@
                                                                                                     comp:[shapePath isClockwise]];
     XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
 
-    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 1, @"correct intersection");
-    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)0.0, @"correct intersection");
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 5, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)1.0, @"correct intersection");
     XCTAssertEqual(redSegment.endIntersection.elementIndex1, 1, @"correct intersection");
     XCTAssertEqual([self round:redSegment.endIntersection.tValue1 to:6], (CGFloat)0.45, @"correct intersection");
 
@@ -476,8 +476,8 @@
                                                                                                     comp:[shapePath isClockwise]];
     XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
 
-    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 1, @"correct intersection");
-    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)0.0, @"correct intersection");
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 5, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)1.0, @"correct intersection");
     XCTAssertEqual(redSegment.endIntersection.elementIndex1, 1, @"correct intersection");
     XCTAssertEqual([self round:redSegment.endIntersection.tValue1 to:6], (CGFloat)0.45, @"correct intersection");
 
@@ -1836,7 +1836,7 @@
 
     XCTAssertEqual([redSegments count], (NSUInteger)3, @"correct number of segments");
     XCTAssertEqual([greenSegments count], (NSUInteger)2, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     for (DKUIBezierPathClippedSegment *segment in blueSegments) {
         __block int countOfMoveTo = 0;
@@ -1853,7 +1853,7 @@
     blueSegments = [redBlueSegs lastObject];
 
     XCTAssertEqual([redSegments count], (NSUInteger)6, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     for (DKUIBezierPathClippedSegment *segment in blueSegments) {
         __block int countOfMoveTo = 0;
@@ -1880,7 +1880,7 @@
 
     blueSegment = [blueSegments objectAtIndex:2];
     XCTAssertEqual(blueSegment.startIntersection.elementIndex2, 1, @"correct intersection");
-    XCTAssertEqual([self round:blueSegment.startIntersection.tValue2 to:6], (CGFloat)0.733334, @"correct intersection");
+    XCTAssertEqual([self round:blueSegment.startIntersection.tValue2 to:6], (CGFloat)0.733333, @"correct intersection");
     XCTAssertEqual(blueSegment.endIntersection.elementIndex2, 1, @"correct intersection");
     XCTAssertEqual([self round:blueSegment.endIntersection.tValue2 to:6], (CGFloat)0.733334, @"correct intersection");
 }
