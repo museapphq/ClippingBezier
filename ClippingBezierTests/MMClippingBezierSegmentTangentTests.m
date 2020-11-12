@@ -801,6 +801,9 @@
 
 - (void)testCircleThroughRectangle
 {
+    // there is a TODO in UIBezierPath+Clipping.m to handle tangent lines
+    XCTAssertTrue(NO, @"functionality needs defining");
+
     // here, the scissor is a circle that is contained with in a square shape
     // the square wraps around the outside of the circle
     UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];

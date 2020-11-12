@@ -342,7 +342,7 @@ static NSInteger segmentCompareCount = 0;
             // or in -> out -> in crossing
             if (isDistinctIntersection) {
                 lastInter = obj;
-            } else {
+            } else if (lastInter != obj) {
                 [[lastInter matchedIntersections] addObject:obj];
             }
             return isDistinctIntersection;
