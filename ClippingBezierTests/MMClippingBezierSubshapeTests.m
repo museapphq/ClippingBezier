@@ -2343,4 +2343,33 @@
     }
 }
 
+- (void)testCircleThroughRectangleFirstSegmentTangent3
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+
+    NSArray *subShapePaths = [shapePath shapeShellsAndSubshapesCreatedFromSlicingWithUnclosedPath:scissorPath];
+    NSArray *foundShapes = [subShapePaths firstObject];
+
+    XCTAssertEqual([foundShapes count], (NSUInteger)4, @"found shapes");
+
+    for (DKUIBezierPathShape *shape in foundShapes) {
+        XCTAssertTrue([shape isClosed], @"shape is closed");
+    }
+
+    XCTAssertEqual([[[foundShapes objectAtIndex:0] segments] count], (NSUInteger)3, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:1] segments] count], (NSUInteger)3, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:2] segments] count], (NSUInteger)2, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:3] segments] count], (NSUInteger)2, @"found closed shape");
+
+    NSArray *uniqueShapes = [shapePath uniqueShapesCreatedFromSlicingWithUnclosedPath:scissorPath];
+    XCTAssertEqual([uniqueShapes count], (NSUInteger)3, @"found shapes");
+    for (DKUIBezierPathShape *shape in uniqueShapes) {
+        XCTAssertTrue([shape isClosed], @"shape is closed");
+        XCTAssertEqual([shape.holes count], (NSUInteger)0, @"shape is closed");
+    }
+}
+
 @end

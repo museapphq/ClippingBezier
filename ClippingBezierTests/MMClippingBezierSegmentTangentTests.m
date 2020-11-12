@@ -1169,4 +1169,51 @@
     XCTAssertEqual([blueSegments count], (NSUInteger)2, @"correct number of segments");
 }
 
+- (void)testCircleThroughRectangleFirstSegmentTangent
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+
+    XCTAssertTrue([shapePath isClockwise], @"shape is clockwise");
+
+    NSArray *allSegments = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
+    NSArray *redSegments = [allSegments firstObject];
+    NSArray *blueSegments = [allSegments lastObject];
+
+    for (DKUIBezierPathClippedSegment *redSegment in redSegments) {
+        DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
+                                                                                                      forRed:redSegments
+                                                                                                     andBlue:blueSegments
+                                                                                                  lastWasRed:YES
+                                                                                                        comp:[shapePath isClockwise]];
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    }
+}
+
+- (void)testCircleThroughRectangleCompareTangents
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+
+    XCTAssertTrue([shapePath isClockwise], @"shape is correct direction");
+
+    NSArray *redBlueSegs = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
+    NSArray *redSegments = [redBlueSegs firstObject];
+    NSArray *blueSegments = [redBlueSegs lastObject];
+
+    // the forward path takes right turns, like normal...
+    for (DKUIBezierPathClippedSegment *redSegment in redSegments) {
+        DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
+                                                                                                      forRed:redSegments
+                                                                                                     andBlue:blueSegments
+                                                                                                  lastWasRed:YES
+                                                                                                        comp:[shapePath isClockwise]];
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    }
+}
+
 @end
