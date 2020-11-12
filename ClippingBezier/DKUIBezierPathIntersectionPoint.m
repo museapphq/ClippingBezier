@@ -83,6 +83,11 @@
     mayCrossBoundary = _mayCrossBoundary;
 }
 
+- (void)setDirection:(DKIntersectionDirection)direction
+{
+    _direction = direction;
+}
+
 - (DKUIBezierPathIntersectionPoint *)flipped
 {
     DKUIBezierPathIntersectionPoint *ret = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:self.elementIndex2
@@ -102,6 +107,7 @@
     ret.bez2[2] = self.bez1[2];
     ret.bez2[3] = self.bez1[3];
     ret.mayCrossBoundary = self.mayCrossBoundary;
+    ret.direction = self.direction;
     ret.pathLength1 = self.pathLength2;
     ret.pathLength2 = self.pathLength1;
 
@@ -299,6 +305,13 @@
     result = prime * result + self.elementCount2;
     result = prime * result + self.tValue2;
     result = prime * result + ((self.mayCrossBoundary) ? 1231 : 1237);
+    if (self.direction == kDKIntersectionDirectionLeft) {
+        result = prime * result + 1231;
+    } else if (self.direction == kDKIntersectionDirectionRight) {
+        result = prime * result + 1237;
+    } else {
+        result = prime * result + 1327;
+    }
     return result;
 }
 

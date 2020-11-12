@@ -13,4 +13,6 @@
 
 - (void)setMayCrossBoundary:(BOOL)mayCrossBoundary;
 
+- (void)setDirection:(DKIntersectionDirection)direction;
+
 @end
