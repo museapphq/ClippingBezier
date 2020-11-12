@@ -508,6 +508,8 @@ static NSInteger segmentCompareCount = 0;
                     intersection.mayCrossBoundary = isInside != isInsideAfterIntersection;
                 }
 
+                // TODO: detect the direction that the intersection moves.
+
                 // setup for next iteration of loop
                 lastIntersection = intersection;
                 isInside = isInsideAfterIntersection;
@@ -850,6 +852,7 @@ static NSInteger segmentCompareCount = 0;
                                                                                                          andLengthUntilPath1Loc:oldInter.lenAtInter1
                                                                                                          andLengthUntilPath2Loc:oldInter.lenAtInter2];
                         [newInter setMayCrossBoundary:oldInter.mayCrossBoundary];
+                        [newInter setDirection:oldInter.direction];
                         newInter.pathLength1 = oldInter.pathLength1;
                         newInter.pathLength2 = oldInter.pathLength2;
                         [tValuesOfIntersectionPoints replaceObjectAtIndex:i withObject:newInter];
@@ -1217,14 +1220,14 @@ static NSInteger segmentCompareCount = 0;
     // because we're going to reuse and resort the tValuesOfIntersectionPoints1.
     // this solves rounding error that happens when intersections generate slightly differently
     // depending on the order of paths sent in
-    NSArray *intersectionsWithBoundaryInformation = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
+    NSArray<DKUIBezierPathIntersectionPoint *> *intersectionsWithBoundaryInformation = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     //
     // this array will be the intersections between the shape and the scissor.
     // we'll use the exact same intersection objects (flipped, b/c we're attacking from
     // the shape v scissor instead of vice versa). We'll need to order them and
     // set the mayCrossBoundary so that the final array will appear as if it came
     // directly from [shapePath findIntersectionsWithClosedPath:scissorPath...]
-    NSMutableArray *shapeToScissorIntersections = [NSMutableArray array];
+    NSMutableArray<DKUIBezierPathIntersectionPoint *> *shapeToScissorIntersections = [NSMutableArray array];
     // 1. flip
     [scissorToShapeIntersections enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [shapeToScissorIntersections addObject:[obj flipped]];
@@ -1246,6 +1249,7 @@ static NSInteger segmentCompareCount = 0;
     // 3. fix mayCrossBoundary:
     for (int i = 0; i < [intersectionsWithBoundaryInformation count]; i++) {
         [[shapeToScissorIntersections objectAtIndex:i] setMayCrossBoundary:[[intersectionsWithBoundaryInformation objectAtIndex:i] mayCrossBoundary]];
+        [[shapeToScissorIntersections objectAtIndex:i] setDirection:[[intersectionsWithBoundaryInformation objectAtIndex:i] direction]];
     }
 
     //
