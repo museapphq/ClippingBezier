@@ -598,8 +598,8 @@
     XCTAssertEqual([[[foundShapes objectAtIndex:1] segments] count], (NSUInteger)4, @"found closed shape");
     XCTAssertEqual([[[foundShapes objectAtIndex:2] segments] count], (NSUInteger)2, @"found closed shape");
     XCTAssertEqual([[[foundShapes objectAtIndex:3] segments] count], (NSUInteger)2, @"found closed shape");
-    XCTAssertEqual([[[foundShapes objectAtIndex:4] segments] count], (NSUInteger)3, @"found closed shape");
-    XCTAssertEqual([[[foundShapes objectAtIndex:5] segments] count], (NSUInteger)3, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:4] segments] count], (NSUInteger)4, @"found closed shape");
+    XCTAssertEqual([[[foundShapes objectAtIndex:5] segments] count], (NSUInteger)4, @"found closed shape");
 
     NSArray *uniqueShapes = [shapePath uniqueShapesCreatedFromSlicingWithUnclosedPath:scissorPath];
     XCTAssertEqual([uniqueShapes count], (NSUInteger)4, @"found shapes");

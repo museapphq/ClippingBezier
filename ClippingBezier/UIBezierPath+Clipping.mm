@@ -357,24 +357,79 @@ static NSInteger segmentCompareCount = 0;
             CGFloat angle = [myTan angleWithRespectTo:shapeTan];
             const CGFloat marginOfErr = 0.00001;
 
-            if (angle < -marginOfErr) {
-                // the angle is negative, so myTan is aiming to the right of shapeTan
-                // our path is moving /outside/ => /inside/ of closedPath
-                [intersection setDirection:kDKIntersectionDirectionRight];
-            } else if (angle > marginOfErr) {
-                // the angle is positive, so myTan is aiming to the left of shapeTan
-                [intersection setDirection:kDKIntersectionDirectionLeft];
-                // our path is moving /inside/ => /outside/ of closedPath
-            } else if (angle >= -marginOfErr && angle <= marginOfErr) {
-                // our path is tangent to the closed path, and we're in the same direction
-                [intersection setDirection:kDKIntersectionDirectionSame];
-            } else if (angle >= M_PI - marginOfErr || angle <= -M_PI + marginOfErr) {
-                // our path is tangent to the closed path, and we're in the opposite direction
-                [intersection setDirection:kDKIntersectionDirectionSame];
+            // if our intersection happens to be at an element boundary, then
+            // we need to also check the previous/next element's tangent too.
+            // if they're the same, treat them as such. if they're different,
+            // treat it as a kDKIntersectionDirectionSame as it'll be a tangent point.
+            NSInteger nextEleIndex = intersection.elementIndex2;
+            CGFloat nextTValue = intersection.tValue2;
+
+            // TODO: standardize this process, so that it'll find the correct before/after
+            // without needin to calculate it manually all the time. if there's 4 lineTo
+            // elements in a row that all point to the exact same point, then i should be able
+            // to find the next/prev where there's an incoming/outgoing tangent.
+            if (intersection.tValue2 == 0.0 && (nextEleIndex > 0 || [closedPath isClosed])) {
+                nextEleIndex = nextEleIndex <= 1 ? intersection.elementCount2 - 1 : nextEleIndex - 1;
+                nextTValue = 1.0;
+            } else if (intersection.tValue2 == 1.0 && (nextEleIndex < intersection.elementCount2 - 1 || [closedPath isClosed])) {
+                nextEleIndex = nextEleIndex == intersection.elementCount2 - 1 ? 0 : nextEleIndex + 1;
+                nextTValue = 0;
+
+                if ([closedPath isClosed] && nextEleIndex == intersection.elementCount2 - 1) {
+                    // we just got bumped into the closePath element. make sure that the close path element
+                    // is acting like a lineTo and isn't a noop
+                    CGPoint points[3];
+                    CGPathElement ele = [closedPath elementAtIndex:nextEleIndex - 1 associatedPoints:points];
+                    CGPoint elePoint = points[[UIBezierPath numberOfPointsForElement:ele] - 1];
+                    CGPoint firstPoint = [closedPath firstPoint];
+                    if (nextEleIndex > 1 && CGPointEqualToPoint(firstPoint, elePoint)) {
+                        nextEleIndex = 0;
+                    }
+                }
+            }
+
+            CGPoint nextShapeCGTan = [closedPath tangentOnPathAtElement:nextEleIndex andTValue:nextTValue];
+            DKVector *nextShapeTan = [DKVector vectorWithX:nextShapeCGTan.x andY:nextShapeCGTan.y];
+            CGFloat nextAngle = [myTan angleWithRespectTo:nextShapeTan];
+
+            DKIntersectionDirection (^directionForAngle)(CGFloat angle) = ^DKIntersectionDirection(CGFloat angle) {
+                if (angle < -marginOfErr) {
+                    // the angle is negative, so myTan is aiming to the right of shapeTan
+                    // our path is moving /outside/ => /inside/ of closedPath
+                    return kDKIntersectionDirectionRight;
+                } else if (angle > marginOfErr) {
+                    // the angle is positive, so myTan is aiming to the left of shapeTan
+                    // our path is moving /inside/ => /outside/ of closedPath
+                    return kDKIntersectionDirectionLeft;
+                } else if (angle >= -marginOfErr && angle <= marginOfErr) {
+                    // our path is tangent to the closed path, and we're in the same direction
+                    return kDKIntersectionDirectionSame;
+                } else if (angle >= M_PI - marginOfErr || angle <= -M_PI + marginOfErr) {
+                    // our path is tangent to the closed path, and we're in the opposite direction
+                    return kDKIntersectionDirectionSame;
+                } else {
+                    // an unknown error occurred
+                    assert("angle should be between -M_PI and M_PI");
+                    return kDKIntersectionDirectionSame;
+                }
+            };
+
+            DKIntersectionDirection shapeDir = directionForAngle(angle);
+            DKIntersectionDirection nextDir = directionForAngle(nextAngle);
+
+            if (shapeDir == nextDir) {
+                [intersection setDirection:shapeDir];
             } else {
-                // an unknown error occurred
-                assert("angle should be between -M_PI and M_PI");
-                [intersection setDirection:kDKIntersectionDirectionSame];
+                if (shapeDir == kDKIntersectionDirectionSame) {
+                    // it's tangent to one of the two elements. treat it as the non-tangent intersection
+                    [intersection setDirection:nextDir];
+                } else if (nextDir == kDKIntersectionDirectionSame) {
+                    // it's tangent to one of the two elements. treat it as the non-tangent intersection
+                    [intersection setDirection:shapeDir];
+                } else {
+                    // they disagree on right/left, so treat it as same
+                    [intersection setDirection:kDKIntersectionDirectionSame];
+                }
             }
 
             // if the intersection is extremely close to another intersection, but changes the direction

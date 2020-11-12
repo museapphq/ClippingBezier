@@ -677,13 +677,13 @@
     XCTAssertEqual([self round:[[intersections objectAtIndex:1] tValue2] to:6], 0.0, @"found correct intersection location");
 
     XCTAssertEqual([[otherIntersections objectAtIndex:0] elementIndex1], 1, @"found correct intersection location");
-    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:0] tValue1] to:6], (CGFloat)1.0, @"found correct intersection location");
-    XCTAssertEqual([[otherIntersections objectAtIndex:1] elementIndex1], 2, @"found correct intersection location");
+    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:0] tValue1] to:6], (CGFloat)0, @"found correct intersection location");
+    XCTAssertEqual([[otherIntersections objectAtIndex:1] elementIndex1], 1, @"found correct intersection location");
     XCTAssertEqual([self round:[[otherIntersections objectAtIndex:1] tValue1] to:6], (CGFloat)1.0, @"found correct intersection location");
     XCTAssertEqual([[otherIntersections objectAtIndex:0] elementIndex2], 1, @"found correct intersection location");
-    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:0] tValue2] to:6], (CGFloat)0.7, @"found correct intersection location");
+    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:0] tValue2] to:6], (CGFloat)0.1, @"found correct intersection location");
     XCTAssertEqual([[otherIntersections objectAtIndex:1] elementIndex2], 1, @"found correct intersection location");
-    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:1] tValue2] to:6], (CGFloat)0.1, @"found correct intersection location");
+    XCTAssertEqual([self round:[[otherIntersections objectAtIndex:1] tValue2] to:6], (CGFloat)0.7, @"found correct intersection location");
 
     XCTAssertTrue([[intersections objectAtIndex:0] mayCrossBoundary], @"crosses boundary");
     XCTAssertTrue([[intersections objectAtIndex:1] mayCrossBoundary], @"crosses boundary");
@@ -1058,8 +1058,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)5, @"5 intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)5, @"5 intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)6, @"5 intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)6, @"5 intersections so we can check for the tangent case");
 }
 
 - (void)testLineThroughNearTangent
@@ -1097,8 +1097,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
 }
 
 - (void)testShapeWithLoop
@@ -1200,8 +1200,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
 }
 
 - (void)testScissorsCreatingHole
