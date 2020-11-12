@@ -374,12 +374,12 @@ static NSInteger segmentCompareCount = 0;
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else if (lastInter != obj) {
-                if ([lastInter direction] == [intersection direction]) {
-                    [[lastInter matchedIntersections] addObject:obj];
-                } else {
-                    isDistinctIntersection = YES;
-                    lastInter = obj;
-                }
+                //                if ([lastInter direction] != [intersection direction] && [intersection direction] != kDKIntersectionDirectionSame) {
+                //                    isDistinctIntersection = YES;
+                //                    lastInter = obj;
+                //                } else {
+                [[lastInter matchedIntersections] addObject:obj];
+                //                }
             }
             return isDistinctIntersection;
         }]]];

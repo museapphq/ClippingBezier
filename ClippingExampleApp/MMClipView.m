@@ -38,6 +38,11 @@
     tapPoint = CGPointNotFound;
     path1 = [UIBezierPath debug1];
     path2 = [UIBezierPath debug2];
+    [self refreshColors];
+}
+
+- (void)refreshColors
+{
     randomColors = @[];
 
     for (int i = 0; i < 100; i++) {
@@ -47,6 +52,7 @@
 
 - (IBAction)changedPreviewType:(id)sender
 {
+    [self refreshColors];
     [self setNeedsDisplay];
 }
 
