@@ -23,8 +23,6 @@
     NSInteger elementCount2;
     CGFloat lenAtInter1;
     CGFloat lenAtInter2;
-    CGFloat pathLength1;
-    CGFloat pathLength2;
 }
 
 @synthesize elementIndex1;
@@ -38,15 +36,46 @@
 @synthesize mayCrossBoundary;
 @synthesize lenAtInter1;
 @synthesize lenAtInter2;
-@synthesize pathLength1;
-@synthesize pathLength2;
 
-+ (id)intersectionAtElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
++ (id)intersectionAtElementIndex:(NSInteger)index1
+                       andTValue:(CGFloat)_tValue1
+                withElementIndex:(NSInteger)index2
+                       andTValue:(CGFloat)_tValue2
+                andElementCount1:(NSInteger)_elementCount1
+                andElementCount2:(NSInteger)_elementCount2
+          andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+          andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+                  andPathLength1:(CGFloat)pathlen1
+                  andPathLength2:(CGFloat)pathlen2
+                  andClosedPath1:(BOOL)closed1
+                  andClosedPath2:(BOOL)closed2
 {
-    return [[DKUIBezierPathIntersectionPoint alloc] initWithElementIndex:index1 andTValue:_tValue1 withElementIndex:index2 andTValue:_tValue2 andElementCount1:_elementCount1 andElementCount2:_elementCount2 andLengthUntilPath1Loc:_lenAtInter1 andLengthUntilPath2Loc:_lenAtInter2];
+    return [[DKUIBezierPathIntersectionPoint alloc] initWithElementIndex:index1
+                                                               andTValue:_tValue1
+                                                        withElementIndex:index2
+                                                               andTValue:_tValue2
+                                                        andElementCount1:_elementCount1
+                                                        andElementCount2:_elementCount2
+                                                  andLengthUntilPath1Loc:_lenAtInter1
+                                                  andLengthUntilPath2Loc:_lenAtInter2
+                                                          andPathLength1:pathlen1
+                                                          andPathLength2:pathlen2
+                                                          andClosedPath1:closed1
+                                                          andClosedPath2:closed2];
 }
 
-- (id)initWithElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+- (id)initWithElementIndex:(NSInteger)index1
+                 andTValue:(CGFloat)_tValue1
+          withElementIndex:(NSInteger)index2
+                 andTValue:(CGFloat)_tValue2
+          andElementCount1:(NSInteger)_elementCount1
+          andElementCount2:(NSInteger)_elementCount2
+    andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+    andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+            andPathLength1:(CGFloat)pathlen1
+            andPathLength2:(CGFloat)pathlen2
+            andClosedPath1:(BOOL)closed1
+            andClosedPath2:(BOOL)closed2
 {
     if (self = [super init]) {
         elementIndex1 = index1;
@@ -62,6 +91,10 @@
         elementCount2 = _elementCount2;
         lenAtInter1 = _lenAtInter1;
         lenAtInter2 = _lenAtInter2;
+        _pathClosed1 = closed1;
+        _pathClosed2 = closed2;
+        _pathLength1 = pathlen1;
+        _pathLength2 = pathlen1;
         _matchedIntersections = [[NSMutableSet alloc] init];
     }
     return self;
@@ -97,7 +130,11 @@
                                                                                       andElementCount1:elementCount2
                                                                                       andElementCount2:elementCount1
                                                                                 andLengthUntilPath1Loc:lenAtInter2
-                                                                                andLengthUntilPath2Loc:lenAtInter1];
+                                                                                andLengthUntilPath2Loc:lenAtInter1
+                                                                                        andPathLength1:self.pathLength1
+                                                                                        andPathLength2:self.pathLength2
+                                                                                        andClosedPath1:self.pathClosed2
+                                                                                        andClosedPath2:self.pathClosed1];
     ret.bez1[0] = self.bez2[0];
     ret.bez1[1] = self.bez2[1];
     ret.bez1[2] = self.bez2[2];
@@ -108,8 +145,6 @@
     ret.bez2[3] = self.bez1[3];
     ret.mayCrossBoundary = self.mayCrossBoundary;
     ret.direction = self.direction;
-    ret.pathLength1 = self.pathLength2;
-    ret.pathLength2 = self.pathLength1;
 
     NSMutableArray<DKUIBezierPathIntersectionPoint *> *flippedPoints = [NSMutableArray array];
     for (DKUIBezierPathIntersectionPoint *p in self.matchedIntersections) {
@@ -125,41 +160,17 @@
  * precision distance, and if both the length along
  * each path is within the precision.
  */
-- (BOOL)isCloseToIntersection:(DKUIBezierPathIntersectionPoint *)otherIntersection withPrecision:(CGFloat)precision
+- (BOOL)isCloseToIntersection:(DKUIBezierPathIntersectionPoint *)other withPrecision:(CGFloat)precision
 {
-    CGFloat dist1 = ABS(self.lenAtInter1 - otherIntersection.lenAtInter1);
-    CGFloat dist2 = ABS(self.lenAtInter2 - otherIntersection.lenAtInter2);
+    CGFloat myDistFromEnd1 = [self pathClosed1] ? MIN(self.lenAtInter1, ABS(self.pathLength1 - self.lenAtInter1)) : self.lenAtInter1;
+    CGFloat otherDistFromEnd1 = [other pathClosed1] ? MIN(other.lenAtInter1, ABS(other.pathLength1 - other.lenAtInter1)) : other.lenAtInter1;
+    CGFloat compare1 = ABS(myDistFromEnd1 - otherDistFromEnd1);
 
-    // next, check if we're close to the beginning
-    // or end
-    CGFloat distFromEnd1 = self.pathLength1 - self.lenAtInter1;
-    if (distFromEnd1 < precision) {
-        CGFloat dist1other = ABS(distFromEnd1 - otherIntersection.lenAtInter1);
-        dist1 = MIN(dist1, dist1other);
-    }
-    CGFloat distFromEnd2 = self.pathLength2 - self.lenAtInter2;
-    if (distFromEnd2 < precision) {
-        CGFloat dist2other = ABS(distFromEnd2 - otherIntersection.lenAtInter2);
-        dist2 = MIN(dist2, dist2other);
-    }
+    CGFloat myDistFromEnd2 = [self pathClosed2] ? MIN(self.lenAtInter2, ABS(self.pathLength2 - self.lenAtInter2)) : self.lenAtInter2;
+    CGFloat otherDistFromEnd2 = [other pathClosed2] ? MIN(other.lenAtInter2, ABS(other.pathLength2 - other.lenAtInter2)) : other.lenAtInter2;
+    CGFloat compare2 = ABS(myDistFromEnd2 - otherDistFromEnd2);
 
-    distFromEnd1 = otherIntersection.pathLength1 - otherIntersection.lenAtInter1;
-    if (distFromEnd1 < precision) {
-        CGFloat dist1other = ABS(distFromEnd1 - self.lenAtInter1);
-        dist1 = MIN(dist1, dist1other);
-    }
-
-    distFromEnd2 = otherIntersection.pathLength2 - otherIntersection.lenAtInter2;
-    if (distFromEnd2 < precision) {
-        CGFloat dist2other = ABS(distFromEnd2 - self.lenAtInter2);
-        dist2 = MIN(dist2, dist2other);
-    }
-
-    if (MAX(dist1, dist2) < precision) {
-        return YES;
-    }
-
-    return NO;
+    return compare1 < precision && compare2 < precision;
 }
 
 

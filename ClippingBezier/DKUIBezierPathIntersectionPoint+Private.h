@@ -9,7 +9,18 @@
 
 @interface DKUIBezierPathIntersectionPoint (Private)
 
-- (id)initWithElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2;
+- (id)initWithElementIndex:(NSInteger)index1
+                 andTValue:(CGFloat)_tValue1
+          withElementIndex:(NSInteger)index2
+                 andTValue:(CGFloat)_tValue2
+          andElementCount1:(NSInteger)_elementCount1
+          andElementCount2:(NSInteger)_elementCount2
+    andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+    andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+            andPathLength1:(CGFloat)pathlen1
+            andPathLength2:(CGFloat)pathlen2
+            andClosedPath1:(BOOL)closed1
+            andClosedPath2:(BOOL)closed2;
 
 - (void)setMayCrossBoundary:(BOOL)mayCrossBoundary;
 

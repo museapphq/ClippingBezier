@@ -17,12 +17,45 @@ static NSUInteger uniqueIntersectionIdGeneration = 0;
 
 @synthesize uniqueUnmatchedIntersectionId;
 
-+ (id)intersectionAtElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
++ (id)intersectionAtElementIndex:(NSInteger)index1
+                       andTValue:(CGFloat)_tValue1
+                withElementIndex:(NSInteger)index2
+                       andTValue:(CGFloat)_tValue2
+                andElementCount1:(NSInteger)_elementCount1
+                andElementCount2:(NSInteger)_elementCount2
+          andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+          andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+                  andPathLength1:(CGFloat)pathlen1
+                  andPathLength2:(CGFloat)pathlen2
+                  andClosedPath1:(BOOL)closed1
+                  andClosedPath2:(BOOL)closed2
 {
-    return [[DKUIBezierUnmatchedPathIntersectionPoint alloc] initWithElementIndex:index1 andTValue:_tValue1 withElementIndex:index2 andTValue:_tValue2 andElementCount1:_elementCount1 andElementCount2:_elementCount2 andLengthUntilPath1Loc:_lenAtInter1 andLengthUntilPath2Loc:_lenAtInter2];
+    return [[DKUIBezierUnmatchedPathIntersectionPoint alloc] initWithElementIndex:index1
+                                                                        andTValue:_tValue1
+                                                                 withElementIndex:index2
+                                                                        andTValue:_tValue2
+                                                                 andElementCount1:_elementCount1
+                                                                 andElementCount2:_elementCount2
+                                                           andLengthUntilPath1Loc:_lenAtInter1
+                                                           andLengthUntilPath2Loc:_lenAtInter2
+                                                                   andPathLength1:pathlen1
+                                                                   andPathLength2:pathlen2
+                                                                   andClosedPath1:closed1
+                                                                   andClosedPath2:closed2];
 }
 
-- (id)initWithElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+- (id)initWithElementIndex:(NSInteger)index1
+                 andTValue:(CGFloat)_tValue1
+          withElementIndex:(NSInteger)index2
+                 andTValue:(CGFloat)_tValue2
+          andElementCount1:(NSInteger)_elementCount1
+          andElementCount2:(NSInteger)_elementCount2
+    andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+    andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+            andPathLength1:(CGFloat)pathlen1
+            andPathLength2:(CGFloat)pathlen2
+            andClosedPath1:(BOOL)closed1
+            andClosedPath2:(BOOL)closed2
 {
     if (self = [super initWithElementIndex:index1
                                  andTValue:_tValue1
@@ -31,7 +64,11 @@ static NSUInteger uniqueIntersectionIdGeneration = 0;
                           andElementCount1:_elementCount1
                           andElementCount2:_elementCount2
                     andLengthUntilPath1Loc:_lenAtInter1
-                    andLengthUntilPath2Loc:_lenAtInter2]) {
+                    andLengthUntilPath2Loc:_lenAtInter2
+                            andPathLength1:pathlen1
+                            andPathLength2:pathlen2
+                            andClosedPath1:closed1
+                            andClosedPath2:closed2]) {
         @synchronized([DKUIBezierUnmatchedPathIntersectionPoint class])
         {
             [self setUniqueId:uniqueIntersectionIdGeneration];
@@ -61,7 +98,11 @@ static NSUInteger uniqueIntersectionIdGeneration = 0;
                                                                                                         andElementCount1:self.elementCount2
                                                                                                         andElementCount2:self.elementCount1
                                                                                                   andLengthUntilPath1Loc:self.lenAtInter2
-                                                                                                  andLengthUntilPath2Loc:self.lenAtInter1];
+                                                                                                  andLengthUntilPath2Loc:self.lenAtInter1
+                                                                                                          andPathLength1:self.pathLength1
+                                                                                                          andPathLength2:self.pathLength2
+                                                                                                          andClosedPath1:self.pathClosed2
+                                                                                                          andClosedPath2:self.pathClosed1];
     ret.bez1[0] = self.bez2[0];
     ret.bez1[1] = self.bez2[1];
     ret.bez1[2] = self.bez2[2];
@@ -72,8 +113,6 @@ static NSUInteger uniqueIntersectionIdGeneration = 0;
     ret.bez2[3] = self.bez1[3];
     ret.mayCrossBoundary = self.mayCrossBoundary;
     ret.direction = self.direction;
-    ret.pathLength1 = self.pathLength2;
-    ret.pathLength2 = self.pathLength1;
     [ret setUniqueId:self.uniqueUnmatchedIntersectionId];
     return ret;
 }
