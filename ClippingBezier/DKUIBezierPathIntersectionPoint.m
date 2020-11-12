@@ -94,7 +94,7 @@
         _pathClosed1 = closed1;
         _pathClosed2 = closed2;
         _pathLength1 = pathlen1;
-        _pathLength2 = pathlen1;
+        _pathLength2 = pathlen2;
         _matchedIntersections = [[NSMutableSet alloc] init];
     }
     return self;
@@ -170,7 +170,7 @@
     CGFloat otherDistFromEnd2 = [other pathClosed2] ? MIN(other.lenAtInter2, ABS(other.pathLength2 - other.lenAtInter2)) : other.lenAtInter2;
     CGFloat compare2 = ABS(myDistFromEnd2 - otherDistFromEnd2);
 
-    return compare1 < precision && compare2 < precision;
+    return (compare1 < precision && compare2 < precision);
 }
 
 

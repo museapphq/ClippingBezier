@@ -2327,4 +2327,20 @@
     }
 }
 
+- (void)testCircleThroughReversedRectangleFirstSegmentTangent2
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+
+    NSArray *foundShapes = [shapePath uniqueShapesCreatedFromSlicingWithUnclosedPath:scissorPath];
+
+    XCTAssertEqual([foundShapes count], (NSUInteger)3);
+
+    for (DKUIBezierPathShape *shape in foundShapes) {
+        XCTAssertTrue([shape isClosed]);
+    }
+}
+
 @end

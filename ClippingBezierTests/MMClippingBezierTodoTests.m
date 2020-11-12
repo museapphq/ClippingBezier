@@ -110,6 +110,21 @@
 
 #pragma mark - Intersection
 
+- (void)testCircleThroughReversedRectangle
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    shapePath = [shapePath bezierPathByReversingPath];
+    BOOL beginsInside = NO;
+    NSArray *scissorToShapeIntersections = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:&beginsInside];
+    NSArray *shapeToScissorIntersections = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:&beginsInside];
+
+    XCTAssertEqual([scissorToShapeIntersections count], [shapeToScissorIntersections count], @"count of intersections matches");
+    XCTAssertEqual([scissorToShapeIntersections count], (NSUInteger)6, @"count of intersections matches");
+}
+
 - (void)testFindingIntersectionsForVerticalTangentLines
 {
     // there is a TODO in UIBezierPath+Clipping.m to handle tangent lines
