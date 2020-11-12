@@ -349,6 +349,37 @@ static NSInteger segmentCompareCount = 0;
                     isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
             }
+
+            // Using the following tangents, determine if the intersection is entering or leaving the shape
+            // or if the intersection is tangent to the shape.
+            CGPoint shapeCGTan = [closedPath tangentOnPathAtElement:intersection.elementIndex2 andTValue:intersection.tValue2];
+            CGPoint myCGTan = [self tangentOnPathAtElement:intersection.elementIndex1 andTValue:intersection.tValue1];
+
+            DKVector *shapeTan = [DKVector vectorWithX:shapeCGTan.x andY:shapeCGTan.y];
+            DKVector *myTan = [DKVector vectorWithX:myCGTan.x andY:myCGTan.y];
+            CGFloat angle = [myTan angleWithRespectTo:shapeTan];
+            const CGFloat marginOfErr = 0.00001;
+
+            if (angle < -marginOfErr) {
+                // the angle is negative, so myTan is aiming to the right of shapeTan
+                // our path is moving /outside/ => /inside/ of closedPath
+                [intersection setDirection:kDKIntersectionDirectionRight];
+            } else if (angle > marginOfErr) {
+                // the angle is positive, so myTan is aiming to the left of shapeTan
+                [intersection setDirection:kDKIntersectionDirectionLeft];
+                // our path is moving /inside/ => /outside/ of closedPath
+            } else if (angle >= -marginOfErr && angle <= marginOfErr) {
+                // our path is tangent to the closed path, and we're in the same direction
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            } else if (angle >= M_PI - marginOfErr || angle <= -M_PI + marginOfErr) {
+                // our path is tangent to the closed path, and we're in the opposite direction
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            } else {
+                // an unknown error occurred
+                assert("angle should be between -M_PI and M_PI");
+                [intersection setDirection:kDKIntersectionDirectionSame];
+            }
+
             // I also need to test if the direction of the boundary crossing is
             // the same direction. if they both go from outside->inside or inside->outside
             // then they're duplicate. otherwise it's a very very close out -> in -> out crossing
@@ -521,7 +552,6 @@ static NSInteger segmentCompareCount = 0;
 
     return [NSArray array];
 }
-
 
 #pragma mark - Segment Finding
 
@@ -1568,7 +1598,7 @@ static NSInteger segmentCompareCount = 0;
         DKUIBezierPathIntersectionPoint *end2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:scissors.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
         DKUIBezierPathClippedSegment *segment2 = [DKUIBezierPathClippedSegment clippedPairWithStart:start2 andEnd:end2 andPathSegment:[scissors copy] fromFullPath:scissors];
         DKUIBezierPathShape *shape2 = [[DKUIBezierPathShape alloc] init];
-        [shape1.segments addObject:segment2];
+        [shape2.segments addObject:segment2];
 
         if ([self containsPoint:[scissors firstPoint]] || [scissors containsPoint:[self firstPoint]]) {
             // the paths contain each other, return the largest
