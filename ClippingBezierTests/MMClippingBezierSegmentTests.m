@@ -425,8 +425,8 @@
                                                                                                     comp:[shapePath isClockwise]];
     XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
 
-    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 5, @"correct intersection");
-    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)1.0, @"correct intersection");
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 1, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)0.0, @"correct intersection");
     XCTAssertEqual(redSegment.endIntersection.elementIndex1, 1, @"correct intersection");
     XCTAssertEqual([self round:redSegment.endIntersection.tValue1 to:6], (CGFloat)0.45, @"correct intersection");
 
@@ -476,8 +476,8 @@
                                                                                                     comp:[shapePath isClockwise]];
     XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
 
-    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 5, @"correct intersection");
-    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)1.0, @"correct intersection");
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 1, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)0.0, @"correct intersection");
     XCTAssertEqual(redSegment.endIntersection.elementIndex1, 1, @"correct intersection");
     XCTAssertEqual([self round:redSegment.endIntersection.tValue1 to:6], (CGFloat)0.45, @"correct intersection");
 
@@ -874,7 +874,7 @@
     NSArray *blueSegments = [allSegments lastObject];
 
     XCTAssertEqual([redSegments count], (NSUInteger)6, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)5, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)6, @"correct number of segments");
 
     DKUIBezierPathClippedSegment *redSegment = [redSegments objectAtIndex:0];
     DKUIBezierPathClippedSegment *correctSegment = [blueSegments objectAtIndex:2];

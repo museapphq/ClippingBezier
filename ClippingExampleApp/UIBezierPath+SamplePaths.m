@@ -186,93 +186,19 @@
 + (UIBezierPath *)debug1
 {
     UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(620.8655482851358, 335.9684147785148)];
-    [path addLineToPoint:CGPointMake(622.9875061968842, 296.6951167729743)];
-    [path addLineToPoint:CGPointMake(624.3363026235381, 271.7315283250078)];
-    [path addLineToPoint:CGPointMake(574.4091257276052, 269.0339354716999)];
-    [path addLineToPoint:CGPointMake(573.0603293009513, 293.9975239196664)];
-    [path addLineToPoint:CGPointMake(572.1602689738288, 310.6558832840694)];
-    [path addLineToPoint:CGPointMake(570.6088626418198, 310.6714746350677)];
-    [path addLineToPoint:CGPointMake(570.6202306904594, 311.8029480841565)];
-    [path addLineToPoint:CGPointMake(541.6974183423137, 311.3675532899119)];
-    [path addLineToPoint:CGPointMake(541.3338926009072, 335.5163883955379)];
-    [path addLineToPoint:CGPointMake(542.8796385873932, 335.4733551188858)];
-    [path addLineToPoint:CGPointMake(541.3338620077711, 335.5163772713557)];
-    [path addLineToPoint:CGPointMake(540.5490725877183, 335.5382195806076)];
-    [path addLineToPoint:CGPointMake(540.2847076854124, 335.5455774014496)];
-    [path addLineToPoint:CGPointMake(540.400733400935, 339.7143561210604)];
-    [path addLineToPoint:CGPointMake(540.9653264397846, 360.0000611907789)];
-    [path addLineToPoint:CGPointMake(540.9488110781331, 361.0971682635864)];
-    [path addLineToPoint:CGPointMake(539.7621196643465, 361.1906105536563)];
-    [path addLineToPoint:CGPointMake(540.7571511930203, 373.8290702513436)];
-    [path addLineToPoint:CGPointMake(540.5970987444573, 384.4612396663441)];
-    [path addLineToPoint:CGPointMake(541.5953977943913, 384.4762676128553)];
-    [path addLineToPoint:CGPointMake(541.5954088784055, 384.4762564637616)];
-    [path addLineToPoint:CGPointMake(541.6745141138086, 385.4810169167816)];
-    [path addLineToPoint:CGPointMake(542.3523955832679, 409.8371537864492)];
-    [path addLineToPoint:CGPointMake(543.5893552536579, 409.8027266459165)];
-    [path addLineToPoint:CGPointMake(543.7675196162107, 412.0656736292227)];
-    [path addLineToPoint:CGPointMake(543.7675163025195, 412.065667385881)];
-    [path addLineToPoint:CGPointMake(542.7217948625087, 412.193467788793)];
-    [path addLineToPoint:CGPointMake(545.6892690622128, 436.4747010447309)];
-    [path addLineToPoint:CGPointMake(547.256607668511, 456.3823534867533)];
-    [path addLineToPoint:CGPointMake(547.2090844239942, 456.3899454455105)];
-    [path addLineToPoint:CGPointMake(547.3038580843761, 456.9825094175761)];
-    [path addLineToPoint:CGPointMake(547.6092252722709, 460.861148733922)];
-    [path addLineToPoint:CGPointMake(547.9202872018868, 460.836658690456)];
-    [path addLineToPoint:CGPointMake(547.9202859278228, 460.8366702670407)];
-    [path addLineToPoint:CGPointMake(551.0843385438143, 480.6196308322495)];
-    [path addLineToPoint:CGPointMake(552.0013655807721, 488.1231661580025)];
-    [path addLineToPoint:CGPointMake(550.9149313889463, 488.3613883024607)];
-    [path addLineToPoint:CGPointMake(553.4350065814868, 499.8538798573999)];
-    [path addLineToPoint:CGPointMake(553.5562383675456, 500.8458526592783)];
-    [path addLineToPoint:CGPointMake(553.5562167332262, 500.8458661326099)];
-    [path addLineToPoint:CGPointMake(551.4737863047027, 501.5162431495522)];
-    [path addLineToPoint:CGPointMake(557.3419757943045, 519.7449354296439)];
-    [path addLineToPoint:CGPointMake(557.6876419908559, 521.9061857788848)];
-    [path addLineToPoint:CGPointMake(557.6876304032364, 521.9061989967712)];
-    [path addLineToPoint:CGPointMake(551.7361215956352, 526.8497639642151)];
-    [path addLineToPoint:CGPointMake(559.608991631909, 536.3278340756736)];
-    [path addLineToPoint:CGPointMake(556.6849026489824, 541.2354474548087)];
-    [path addLineToPoint:CGPointMake(563.3845007933223, 545.2272686133632)];
-    [path addLineToPoint:CGPointMake(563.3980516029808, 545.2890668199545)];
-    [path addLineToPoint:CGPointMake(562.8125648293126, 547.7397520982714)];
-    [path addLineToPoint:CGPointMake(564.4086952067518, 548.1210778424395)];
-    [path addLineToPoint:CGPointMake(564.6698715820489, 558.2419728406546)];
-    [path addLineToPoint:CGPointMake(569.6932379205355, 558.1123285477497)];
-    [path addLineToPoint:CGPointMake(570.8046630629718, 561.5648500589339)];
-    [path addLineToPoint:CGPointMake(578.5111645923483, 559.083969336312)];
-    [path addLineToPoint:CGPointMake(585.7596124490634, 567.8103069757932)];
-    [path addLineToPoint:CGPointMake(592.245064125681, 562.4232273724448)];
-    [path addLineToPoint:CGPointMake(592.2450412897059, 562.4232427178869)];
-    [path addLineToPoint:CGPointMake(599.6383695327306, 566.8284090393294)];
-    [path addLineToPoint:CGPointMake(605.005848754226, 557.8200009960352)];
-    [path addLineToPoint:CGPointMake(605.00586109355, 557.8200001308174)];
-    [path addLineToPoint:CGPointMake(611.4439728774923, 559.3581061663584)];
-    [path addLineToPoint:CGPointMake(612.0024677196927, 557.0203920284805)];
-    [path addLineToPoint:CGPointMake(616.5947866934684, 556.9018816647043)];
-    [path addLineToPoint:CGPointMake(616.3889028562965, 548.9244388161709)];
-    [path addLineToPoint:CGPointMake(617.6134317218899, 549.0197381941508)];
-    [path addLineToPoint:CGPointMake(617.8148593397586, 546.431272777373)];
-    [path addLineToPoint:CGPointMake(618.3992656433492, 546.2431724348635)];
-    [path addLineToPoint:CGPointMake(617.9404139268344, 544.8178151321787)];
-    [path addLineToPoint:CGPointMake(617.9404148839437, 544.8178089065933)];
-    [path addLineToPoint:CGPointMake(618.2514088395587, 540.8213504891512)];
-    [path addLineToPoint:CGPointMake(624.2215623870485, 535.862249022798)];
-    [path addLineToPoint:CGPointMake(620.6505188961908, 531.5631052008537)];
-    [path addLineToPoint:CGPointMake(627.2106601215804, 520.5529724586113)];
-    [path addLineToPoint:CGPointMake(621.5242165383243, 517.1648191211241)];
-    [path addLineToPoint:CGPointMake(624.7532360364884, 503.6489924904732)];
-    [path addLineToPoint:CGPointMake(621.5496811169817, 502.8836427540537)];
-    [path addLineToPoint:CGPointMake(621.5496552988566, 502.8836361371166)];
-    [path addLineToPoint:CGPointMake(621.6149533764311, 497.5977786189702)];
-    [path addLineToPoint:CGPointMake(623.4911667655792, 473.4873258538677)];
-    [path addLineToPoint:CGPointMake(622.2462154236187, 473.3904469921498)];
-    [path addLineToPoint:CGPointMake(622.2462430542701, 473.390441620871)];
-    [path addLineToPoint:CGPointMake(622.0972223383477, 458.5582581236094)];
-    [path addLineToPoint:CGPointMake(622.402573974387, 433.8401549064158)];
-    [path addLineToPoint:CGPointMake(621.8488159037889, 433.8333141360531)];
-    [path addLineToPoint:CGPointMake(620.8655476263901, 335.968414225503)];
+    [path moveToPoint:CGPointMake(150, 200)];
+    // first V through intersection, creates point tangent
+    [path addLineToPoint:CGPointMake(250, 300)];
+    [path addLineToPoint:CGPointMake(300, 200)];
+    // continue top
+    [path addLineToPoint:CGPointMake(550, 200)];
+    [path addLineToPoint:CGPointMake(550, 400)];
+    // second vertical V through intersection
+    [path addLineToPoint:CGPointMake(500, 400)];
+    [path addLineToPoint:CGPointMake(450, 300)];
+    [path addLineToPoint:CGPointMake(400, 400)];
+    [path addLineToPoint:CGPointMake(150, 400)];
+    [path addLineToPoint:CGPointMake(150, 200)];
     [path closePath];
 
     return path;
@@ -281,16 +207,8 @@
 + (UIBezierPath *)debug2
 {
     UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(622.8006134346539, 298.6802895867939)];
-    [path addLineToPoint:CGPointMake(626.3079727420134, 272.6150298465341)];
-    [path addLineToPoint:CGPointMake(629.641941982487, 247.838334160798)];
-    [path addLineToPoint:CGPointMake(580.0885506110146, 241.1703956798509)];
-    [path addLineToPoint:CGPointMake(576.754581370541, 265.947091365587)];
-    [path addLineToPoint:CGPointMake(573.2472220631815, 292.0123511058468)];
-    [path addLineToPoint:CGPointMake(569.9132528227079, 316.7890467915829)];
-    [path addLineToPoint:CGPointMake(619.4666441941803, 323.45698527253)];
-    [path addLineToPoint:CGPointMake(622.8006134346539, 298.6802895867939)];
-    [path closePath];
+    [path moveToPoint:CGPointMake(100, 200)];
+    [path addLineToPoint:CGPointMake(600, 200)];
 
     return path;
 }
