@@ -160,41 +160,17 @@
  * precision distance, and if both the length along
  * each path is within the precision.
  */
-- (BOOL)isCloseToIntersection:(DKUIBezierPathIntersectionPoint *)otherIntersection withPrecision:(CGFloat)precision
+- (BOOL)isCloseToIntersection:(DKUIBezierPathIntersectionPoint *)other withPrecision:(CGFloat)precision
 {
-    CGFloat dist1 = ABS(self.lenAtInter1 - otherIntersection.lenAtInter1);
-    CGFloat dist2 = ABS(self.lenAtInter2 - otherIntersection.lenAtInter2);
+    CGFloat myDistFromEnd1 = [self pathClosed1] ? MIN(self.lenAtInter1, ABS(self.pathLength1 - self.lenAtInter1)) : self.lenAtInter1;
+    CGFloat otherDistFromEnd1 = [other pathClosed1] ? MIN(other.lenAtInter1, ABS(other.pathLength1 - other.lenAtInter1)) : other.lenAtInter1;
+    CGFloat compare1 = ABS(myDistFromEnd1 - otherDistFromEnd1);
 
-    // next, check if we're close to the beginning
-    // or end
-    CGFloat distFromEnd1 = self.pathLength1 - self.lenAtInter1;
-    if (distFromEnd1 < precision) {
-        CGFloat dist1other = ABS(distFromEnd1 - otherIntersection.lenAtInter1);
-        dist1 = MIN(dist1, dist1other);
-    }
-    CGFloat distFromEnd2 = self.pathLength2 - self.lenAtInter2;
-    if (distFromEnd2 < precision) {
-        CGFloat dist2other = ABS(distFromEnd2 - otherIntersection.lenAtInter2);
-        dist2 = MIN(dist2, dist2other);
-    }
+    CGFloat myDistFromEnd2 = [self pathClosed2] ? MIN(self.lenAtInter2, ABS(self.pathLength2 - self.lenAtInter2)) : self.lenAtInter2;
+    CGFloat otherDistFromEnd2 = [other pathClosed2] ? MIN(other.lenAtInter2, ABS(other.pathLength2 - other.lenAtInter2)) : other.lenAtInter2;
+    CGFloat compare2 = ABS(myDistFromEnd2 - otherDistFromEnd2);
 
-    distFromEnd1 = otherIntersection.pathLength1 - otherIntersection.lenAtInter1;
-    if (distFromEnd1 < precision) {
-        CGFloat dist1other = ABS(distFromEnd1 - self.lenAtInter1);
-        dist1 = MIN(dist1, dist1other);
-    }
-
-    distFromEnd2 = otherIntersection.pathLength2 - otherIntersection.lenAtInter2;
-    if (distFromEnd2 < precision) {
-        CGFloat dist2other = ABS(distFromEnd2 - self.lenAtInter2);
-        dist2 = MIN(dist2, dist2other);
-    }
-
-    if (MAX(dist1, dist2) < precision) {
-        return YES;
-    }
-
-    return NO;
+    return compare1 < precision && compare2 < precision;
 }
 
 
