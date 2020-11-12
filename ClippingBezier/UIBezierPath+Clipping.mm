@@ -300,8 +300,6 @@ static NSInteger segmentCompareCount = 0;
             return NSOrderedDescending;
         }];
 
-        NSLog(@"foundIntersections: %@", foundIntersections);
-
         // save all of our intersections, we may need this reference
         // later if we filter out too many intersections as duplicates
         NSArray *allFoundIntersections = foundIntersections;
@@ -328,10 +326,6 @@ static NSInteger segmentCompareCount = 0;
 
                     BOOL closeLocation1 = [lastInter isCloseToIntersection:intersection withPrecision:kUIBezierClosenessPrecision];
                     BOOL closeLocation2 = [[lastInter flipped] isCloseToIntersection:[intersection flipped] withPrecision:kUIBezierClosenessPrecision];
-
-                    if (closeLocation1 != closeLocation2) {
-                        NSLog(@"gotcha");
-                    }
 
                     isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
@@ -367,6 +361,12 @@ static NSInteger segmentCompareCount = 0;
                 [intersection setDirection:kDKIntersectionDirectionSame];
             }
 
+            // if the intersection is extremely close to another intersection, but changes the direction
+            // that the path enters/leaves the closed path, then we should keep it.
+            BOOL directionChanged = [lastInter direction] != [intersection direction] && [intersection direction] != kDKIntersectionDirectionSame;
+
+            isDistinctIntersection = isDistinctIntersection || directionChanged;
+
             // I also need to test if the direction of the boundary crossing is
             // the same direction. if they both go from outside->inside or inside->outside
             // then they're duplicate. otherwise it's a very very close out -> in -> out crossing
@@ -374,17 +374,10 @@ static NSInteger segmentCompareCount = 0;
             if (isDistinctIntersection) {
                 lastInter = obj;
             } else if (lastInter != obj) {
-                //                if ([lastInter direction] != [intersection direction] && [intersection direction] != kDKIntersectionDirectionSame) {
-                //                    isDistinctIntersection = YES;
-                //                    lastInter = obj;
-                //                } else {
                 [[lastInter matchedIntersections] addObject:obj];
-                //                }
             }
             return isDistinctIntersection;
         }]]];
-
-        NSLog(@"filtered: %@", foundIntersections);
 
         // make sure we have the points sorted by the intersection location
         // inside of self instead of inside the closed curve
@@ -429,8 +422,6 @@ static NSInteger segmentCompareCount = 0;
             // that exactly match their flipped state
             foundIntersections = originallyFoundIntersections;
         }
-
-        NSLog(@"filtered2: %@", foundIntersections);
 
         //
         // next i need to filter all of the intersections to
@@ -554,10 +545,6 @@ static NSInteger segmentCompareCount = 0;
                 isInside = isInsideAfterIntersection;
             }
         }
-
-        NSLog(@"filtered3: %@", foundIntersections);
-
-        NSLog(@"didFlipPathNumbers? %d", didFlipPathNumbers);
 
         return [foundIntersections copy];
     }
@@ -1643,27 +1630,6 @@ static NSInteger segmentCompareCount = 0;
     NSArray<DKUIBezierPathShape *> *clippingResult1 = [self uniqueShapesCreatedFromSlicingWithUnclosedPath:scissors];
     NSArray<DKUIBezierPathShape *> *clippingResult2 = [scissors uniqueShapesCreatedFromSlicingWithUnclosedPath:self];
 
-    NSMutableSet<DKUIBezierPathIntersectionPoint *> *intersections1 = [[NSMutableSet alloc] init];
-    NSMutableSet<DKUIBezierPathIntersectionPoint *> *intersections2 = [[NSMutableSet alloc] init];
-
-    for (DKUIBezierPathShape *shape in clippingResult1) {
-        [intersections1 unionSet:[shape intersections]];
-    }
-
-    for (DKUIBezierPathShape *shape in clippingResult2) {
-        [intersections2 unionSet:[shape intersections]];
-    }
-
-    NSSet *filtered1 = [intersections1 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id _Nullable evaluatedObject, NSDictionary<NSString *, id> *_Nullable bindings) {
-        return [intersections2 containsObject:evaluatedObject];
-    }]];
-    NSSet *filtered2 = [intersections2 filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id _Nullable evaluatedObject, NSDictionary<NSString *, id> *_Nullable bindings) {
-        return [intersections1 containsObject:evaluatedObject];
-    }]];
-
-    NSLog(@"intersections");
-
-
     // Cutting the scissors path with self will return shapes with flipped intersections,
     // so flip them back so that the intersection element/tvalue order matches clippingResult1
     NSMutableArray *flippedResult2 = [NSMutableArray array];
@@ -1678,9 +1644,6 @@ static NSInteger segmentCompareCount = 0;
     for (DKUIBezierPathShape *firstShape in clippingResult1) {
         BOOL didFind = NO;
         for (DKUIBezierPathShape *secondShape in finalShapes) {
-            NSSet<DKUIBezierPathIntersectionPoint *> *inter1 = [firstShape intersections];
-            NSSet<DKUIBezierPathIntersectionPoint *> *inter2 = [secondShape intersections];
-
             if ([firstShape isSameShapeAs:secondShape] || [[firstShape fullPath] isEqualToBezierPath:[secondShape fullPath]]) {
                 didFind = YES;
                 break;
@@ -1710,7 +1673,6 @@ static NSInteger segmentCompareCount = 0;
             }];
 
             if (index != NSNotFound && index != 0) {
-                NSLog(@"gotcha");
                 [[gluedShapes firstObject] canGlueToShape:shape];
             }
 
@@ -1908,8 +1870,6 @@ static NSInteger segmentCompareCount = 0;
             //            [output addObject:currentlyBuiltShape];
             [usedBlueSegments removeAllObjects];
         } else {
-            //            NSLog(@"adding shape");
-
             NSIndexSet *indexes = [currentlyBuiltShape.segments indexesOfObjectsPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
                 // all shape segments, when blue, will have been flipped
                 return (BOOL)([intersectionsOfShell containsObject:[[obj startIntersection] flipped]] ||
@@ -1947,10 +1907,6 @@ static NSInteger segmentCompareCount = 0;
         }
         [allUnusedBlueSegments removeObjectsInArray:usedBlueSegments];
     }
-
-    //    NSLog(@"found shapes: %@", output);
-    //    NSLog(@"found possible holes: %@", holesInNewShapes);
-    //    NSLog(@"still have %d unused blue segments", [allUnusedBlueSegments count]);
 
     for (DKUIBezierPathShape *potentialHole in [holesInNewShapes copy]) {
         // make sure the probable hole is actually a hole, and that
@@ -1999,7 +1955,6 @@ static NSInteger segmentCompareCount = 0;
                 if (!currentSegmentCandidate) {
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
-                    //                        NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
                     if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                         // never allow exactly backwards tangents
                     } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
@@ -2012,7 +1967,6 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[currentSegmentCandidate pathSegment] tangentNearStart].tangent;
                     DKVector *newPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
-                    //                        NSLog(@"angle: %f vs %f", [currSeg angleBetween:currPoss], [currSeg angleBetween:newPoss]);
                     if (gt) {
                         if ([currSeg angleWithRespectTo:newPoss] > [currSeg angleWithRespectTo:currPoss]) {
                             if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
@@ -2050,7 +2004,6 @@ static NSInteger segmentCompareCount = 0;
             if (!currentSegmentCandidate) {
                 DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                 DKVector *currPoss = [[redSeg pathSegment] tangentNearStart].tangent;
-                //                    NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
                 if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                     // never allow exactly backwards tangents
                 } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {

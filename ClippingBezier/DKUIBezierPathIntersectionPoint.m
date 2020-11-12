@@ -48,10 +48,6 @@
 
 - (id)initWithElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
 {
-    if (_tValue1 == 0.98493036733928374 || _tValue2 == 0.98493134944793348) {
-        NSLog(@"gotcha");
-    }
-
     if (self = [super init]) {
         elementIndex1 = index1;
         tValue1 = _tValue1;
@@ -73,7 +69,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f) %d]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2, mayCrossBoundary];
+    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f) b:%d d:%d]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2, mayCrossBoundary, _direction];
 }
 
 - (void)dealloc
