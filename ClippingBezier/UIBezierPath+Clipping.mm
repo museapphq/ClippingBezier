@@ -349,6 +349,10 @@ static NSInteger segmentCompareCount = 0;
             NSInteger nextEleIndex = intersection.elementIndex2;
             CGFloat nextTValue = intersection.tValue2;
 
+            // TODO: standardize this process, so that it'll find the correct before/after
+            // without needin to calculate it manually all the time. if there's 4 lineTo
+            // elements in a row that all point to the exact same point, then i should be able
+            // to find the next/prev where there's an incoming/outgoing tangent.
             if (intersection.tValue2 == 0.0 && (nextEleIndex > 0 || [closedPath isClosed])) {
                 nextEleIndex = nextEleIndex <= 1 ? intersection.elementCount2 - 1 : nextEleIndex - 1;
                 nextTValue = 1.0;
