@@ -127,6 +127,8 @@ static NSInteger segmentCompareCount = 0;
     NSInteger elementCount1 = path1.elementCount;
     NSInteger elementCount2 = path2.elementCount;
 
+    CGFloat path1Length = path1.length;
+    CGFloat path2Length = path2.length;
 
     // track if the path1Element begins inside or
     // outside the closed path. this will help us track
@@ -247,7 +249,11 @@ static NSInteger segmentCompareCount = 0;
                                                                                                                         andElementCount1:elementCount1
                                                                                                                         andElementCount2:elementCount2
                                                                                                                   andLengthUntilPath1Loc:lenTillPath1Inter
-                                                                                                                  andLengthUntilPath2Loc:lenTillPath2Inter];
+                                                                                                                  andLengthUntilPath2Loc:lenTillPath2Inter
+                                                                                                                          andPathLength1:path1Length
+                                                                                                                          andPathLength2:path2Length
+                                                                                                                          andClosedPath1:path1.isClosed
+                                                                                                                          andClosedPath2:path2.isClosed];
                                     // store the two paths that the intersection relates to. these are
                                     // the paths that match each of the CGPathElements that we used to
                                     // find the intersection
@@ -298,17 +304,6 @@ static NSInteger segmentCompareCount = 0;
                 return NSOrderedAscending;
             }
             return NSOrderedDescending;
-        }];
-
-        [foundIntersections enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            DKUIBezierPathIntersectionPoint *intersection = obj;
-            if (!didFlipPathNumbers) {
-                intersection.pathLength1 = path1EstimatedLength;
-                intersection.pathLength2 = path2EstimatedLength;
-            } else {
-                intersection.pathLength1 = path2EstimatedLength;
-                intersection.pathLength2 = path1EstimatedLength;
-            }
         }];
 
         // save all of our intersections, we may need this reference
@@ -366,7 +361,6 @@ static NSInteger segmentCompareCount = 0;
             // or if the intersection is tangent to the shape.
             CGPoint shapeCGTan = [closedPath tangentOnPathAtElement:intersection.elementIndex2 andTValue:intersection.tValue2];
             CGPoint myCGTan = [self tangentOnPathAtElement:intersection.elementIndex1 andTValue:intersection.tValue1];
-
             DKVector *shapeTan = [DKVector vectorWithX:shapeCGTan.x andY:shapeCGTan.y];
             DKVector *myTan = [DKVector vectorWithX:myCGTan.x andY:myCGTan.y];
             CGFloat angle = [myTan angleWithRespectTo:shapeTan];
@@ -551,8 +545,6 @@ static NSInteger segmentCompareCount = 0;
                     intersection.mayCrossBoundary = isInside != isInsideAfterIntersection;
                 }
 
-                // TODO: detect the direction that the intersection moves.
-
                 // setup for next iteration of loop
                 lastIntersection = intersection;
                 isInside = isInsideAfterIntersection;
@@ -674,8 +666,30 @@ static NSInteger segmentCompareCount = 0;
 
         } else {
             // it's closed or unclosed with 0 intersections
-            DKUIBezierUnmatchedPathIntersectionPoint *startOfBlue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:NSNotFound andTValue:0 andElementCount1:self.elementCount andElementCount2:closedPath.elementCount andLengthUntilPath1Loc:self.length andLengthUntilPath2Loc:0];
-            DKUIBezierUnmatchedPathIntersectionPoint *endOfBlue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1 andTValue:1 withElementIndex:NSNotFound andTValue:0 andElementCount1:self.elementCount andElementCount2:closedPath.elementCount andLengthUntilPath1Loc:self.length andLengthUntilPath2Loc:0];
+            DKUIBezierUnmatchedPathIntersectionPoint *startOfBlue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:0
+                                                                                                                               andTValue:0
+                                                                                                                        withElementIndex:NSNotFound
+                                                                                                                               andTValue:0
+                                                                                                                        andElementCount1:self.elementCount
+                                                                                                                        andElementCount2:closedPath.elementCount
+                                                                                                                  andLengthUntilPath1Loc:self.length
+                                                                                                                  andLengthUntilPath2Loc:0
+                                                                                                                          andPathLength1:self.length
+                                                                                                                          andPathLength2:closedPath.length
+                                                                                                                          andClosedPath1:self.isClosed
+                                                                                                                          andClosedPath2:closedPath.isClosed];
+            DKUIBezierUnmatchedPathIntersectionPoint *endOfBlue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1
+                                                                                                                             andTValue:1
+                                                                                                                      withElementIndex:NSNotFound
+                                                                                                                             andTValue:0
+                                                                                                                      andElementCount1:self.elementCount
+                                                                                                                      andElementCount2:closedPath.elementCount
+                                                                                                                andLengthUntilPath1Loc:self.length
+                                                                                                                andLengthUntilPath2Loc:0
+                                                                                                                        andPathLength1:self.length
+                                                                                                                        andPathLength2:closedPath.length
+                                                                                                                        andClosedPath1:self.isClosed
+                                                                                                                        andClosedPath2:closedPath.isClosed];
             NSArray *differenceSegments = [NSArray arrayWithObject:[DKUIBezierPathClippedSegment clippedPairWithStart:startOfBlue
                                                                                                                andEnd:endOfBlue
                                                                                                        andPathSegment:[self copy]
@@ -750,7 +764,18 @@ static NSInteger segmentCompareCount = 0;
     } else {
         // of unclosed paths, the "most recent" intersection is the non-intersection
         // of the start of the path. not sure why we're not using firstIntersectionIsStartOfPath
-        lastTValue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:NSNotFound andTValue:0 andElementCount1:self.elementCount andElementCount2:closedPath.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:0];
+        lastTValue = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:0
+                                                                                andTValue:0
+                                                                         withElementIndex:NSNotFound
+                                                                                andTValue:0
+                                                                         andElementCount1:self.elementCount
+                                                                         andElementCount2:closedPath.elementCount
+                                                                   andLengthUntilPath1Loc:0
+                                                                   andLengthUntilPath2Loc:0
+                                                                           andPathLength1:self.length
+                                                                           andPathLength2:closedPath.length
+                                                                           andClosedPath1:self.isClosed
+                                                                           andClosedPath2:closedPath.isClosed];
     }
     if (firstTValue.elementIndex1 == 1 && firstTValue.tValue1 == 0) {
         // we start on an intersection, so use this as the "last"
@@ -761,7 +786,18 @@ static NSInteger segmentCompareCount = 0;
 
     // the last point is always the end of the path
 
-    DKUIBezierUnmatchedPathIntersectionPoint *endOfTheLine = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1 andTValue:1 withElementIndex:NSNotFound andTValue:0 andElementCount1:self.elementCount andElementCount2:closedPath.elementCount andLengthUntilPath1Loc:self.length andLengthUntilPath2Loc:0];
+    DKUIBezierUnmatchedPathIntersectionPoint *endOfTheLine = [DKUIBezierUnmatchedPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1
+                                                                                                                        andTValue:1
+                                                                                                                 withElementIndex:NSNotFound
+                                                                                                                        andTValue:0
+                                                                                                                 andElementCount1:self.elementCount
+                                                                                                                 andElementCount2:closedPath.elementCount
+                                                                                                           andLengthUntilPath1Loc:self.length
+                                                                                                           andLengthUntilPath2Loc:0
+                                                                                                                   andPathLength1:self.length
+                                                                                                                   andPathLength2:closedPath.length
+                                                                                                                   andClosedPath1:self.isClosed
+                                                                                                                   andClosedPath2:closedPath.isClosed];
 
     CGPoint selfPathStartingPoint = self.firstPoint;
 
@@ -892,11 +928,13 @@ static NSInteger segmentCompareCount = 0;
                                                                                                                andElementCount1:oldInter.elementIndex1
                                                                                                                andElementCount2:oldInter.elementIndex2
                                                                                                          andLengthUntilPath1Loc:oldInter.lenAtInter1
-                                                                                                         andLengthUntilPath2Loc:oldInter.lenAtInter2];
+                                                                                                         andLengthUntilPath2Loc:oldInter.lenAtInter2
+                                                                                                                 andPathLength1:oldInter.pathLength1
+                                                                                                                 andPathLength2:oldInter.pathLength2
+                                                                                                                 andClosedPath1:oldInter.pathClosed1
+                                                                                                                 andClosedPath2:oldInter.pathClosed2];
                         [newInter setMayCrossBoundary:oldInter.mayCrossBoundary];
                         [newInter setDirection:oldInter.direction];
-                        newInter.pathLength1 = oldInter.pathLength1;
-                        newInter.pathLength2 = oldInter.pathLength2;
                         [tValuesOfIntersectionPoints replaceObjectAtIndex:i withObject:newInter];
                     }
                 }
@@ -1054,7 +1092,11 @@ static NSInteger segmentCompareCount = 0;
                                                                                                    andElementCount1:[scissorPath elementCount]
                                                                                                    andElementCount2:inter.elementCount2
                                                                                              andLengthUntilPath1Loc:inter.lenAtInter1 + pathLengthForPreviousSubpaths
-                                                                                             andLengthUntilPath2Loc:inter.lenAtInter2];
+                                                                                             andLengthUntilPath2Loc:inter.lenAtInter2
+                                                                                                     andPathLength1:scissorPath.length
+                                                                                                     andPathLength2:shapePath.length
+                                                                                                     andClosedPath1:scissorPath.isClosed
+                                                                                                     andClosedPath2:shapePath.isClosed];
         ret.bez1[0] = inter.bez1[0];
         ret.bez1[1] = inter.bez1[1];
         ret.bez1[2] = inter.bez1[2];
@@ -1064,8 +1106,6 @@ static NSInteger segmentCompareCount = 0;
         ret.bez2[2] = inter.bez2[2];
         ret.bez2[3] = inter.bez2[3];
         ret.mayCrossBoundary = inter.mayCrossBoundary;
-        ret.pathLength1 = [scissorPath length];
-        ret.pathLength2 = inter.pathLength2;
         return ret;
     };
     DKUIBezierPathClippedSegment * (^adjustNonIntersectionPointForSegment)(DKUIBezierPathClippedSegment *) =
@@ -1600,14 +1640,58 @@ static NSInteger segmentCompareCount = 0;
     if (![intersections count]) {
         // there are no intersections between the paths, which means one fully encompasses the other, or
         // they are completely outside each other
-        DKUIBezierPathIntersectionPoint *start1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:-1 andTValue:-1 andElementCount1:self.elementCount andElementCount2:scissors.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
-        DKUIBezierPathIntersectionPoint *end1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:self.elementCount andElementCount2:scissors.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathIntersectionPoint *start1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0
+                                                                                                    andTValue:0
+                                                                                             withElementIndex:-1
+                                                                                                    andTValue:-1
+                                                                                             andElementCount1:self.elementCount
+                                                                                             andElementCount2:scissors.elementCount
+                                                                                       andLengthUntilPath1Loc:0
+                                                                                       andLengthUntilPath2Loc:-1
+                                                                                               andPathLength1:self.length
+                                                                                               andPathLength2:scissors.length
+                                                                                               andClosedPath1:self.isClosed
+                                                                                               andClosedPath2:scissors.isClosed];
+        DKUIBezierPathIntersectionPoint *end1 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:self.elementCount - 1
+                                                                                                  andTValue:1
+                                                                                           withElementIndex:-1
+                                                                                                  andTValue:-1
+                                                                                           andElementCount1:self.elementCount
+                                                                                           andElementCount2:scissors.elementCount
+                                                                                     andLengthUntilPath1Loc:0
+                                                                                     andLengthUntilPath2Loc:-1
+                                                                                             andPathLength1:self.length
+                                                                                             andPathLength2:scissors.length
+                                                                                             andClosedPath1:self.isClosed
+                                                                                             andClosedPath2:scissors.isClosed];
         DKUIBezierPathClippedSegment *segment1 = [DKUIBezierPathClippedSegment clippedPairWithStart:start1 andEnd:end1 andPathSegment:[self copy] fromFullPath:self];
         DKUIBezierPathShape *shape1 = [[DKUIBezierPathShape alloc] init];
         [shape1.segments addObject:segment1];
 
-        DKUIBezierPathIntersectionPoint *start2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0 andTValue:0 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
-        DKUIBezierPathIntersectionPoint *end2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:scissors.elementCount - 1 andTValue:1 withElementIndex:-1 andTValue:-1 andElementCount1:scissors.elementCount andElementCount2:self.elementCount andLengthUntilPath1Loc:0 andLengthUntilPath2Loc:-1];
+        DKUIBezierPathIntersectionPoint *start2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:0
+                                                                                                    andTValue:0
+                                                                                             withElementIndex:-1
+                                                                                                    andTValue:-1
+                                                                                             andElementCount1:scissors.elementCount
+                                                                                             andElementCount2:self.elementCount
+                                                                                       andLengthUntilPath1Loc:0
+                                                                                       andLengthUntilPath2Loc:-1
+                                                                                               andPathLength1:scissors.length
+                                                                                               andPathLength2:self.length
+                                                                                               andClosedPath1:scissors.isClosed
+                                                                                               andClosedPath2:self.isClosed];
+        DKUIBezierPathIntersectionPoint *end2 = [DKUIBezierPathIntersectionPoint intersectionAtElementIndex:scissors.elementCount - 1
+                                                                                                  andTValue:1
+                                                                                           withElementIndex:-1
+                                                                                                  andTValue:-1
+                                                                                           andElementCount1:scissors.elementCount
+                                                                                           andElementCount2:self.elementCount
+                                                                                     andLengthUntilPath1Loc:0
+                                                                                     andLengthUntilPath2Loc:-1
+                                                                                             andPathLength1:scissors.length
+                                                                                             andPathLength2:self.length
+                                                                                             andClosedPath1:scissors.isClosed
+                                                                                             andClosedPath2:self.isClosed];
         DKUIBezierPathClippedSegment *segment2 = [DKUIBezierPathClippedSegment clippedPairWithStart:start2 andEnd:end2 andPathSegment:[scissors copy] fromFullPath:scissors];
         DKUIBezierPathShape *shape2 = [[DKUIBezierPathShape alloc] init];
         [shape2.segments addObject:segment2];

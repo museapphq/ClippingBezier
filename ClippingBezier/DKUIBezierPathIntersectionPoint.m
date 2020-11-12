@@ -23,8 +23,6 @@
     NSInteger elementCount2;
     CGFloat lenAtInter1;
     CGFloat lenAtInter2;
-    CGFloat pathLength1;
-    CGFloat pathLength2;
 }
 
 @synthesize elementIndex1;
@@ -38,15 +36,46 @@
 @synthesize mayCrossBoundary;
 @synthesize lenAtInter1;
 @synthesize lenAtInter2;
-@synthesize pathLength1;
-@synthesize pathLength2;
 
-+ (id)intersectionAtElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
++ (id)intersectionAtElementIndex:(NSInteger)index1
+                       andTValue:(CGFloat)_tValue1
+                withElementIndex:(NSInteger)index2
+                       andTValue:(CGFloat)_tValue2
+                andElementCount1:(NSInteger)_elementCount1
+                andElementCount2:(NSInteger)_elementCount2
+          andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+          andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+                  andPathLength1:(CGFloat)pathlen1
+                  andPathLength2:(CGFloat)pathlen2
+                  andClosedPath1:(BOOL)closed1
+                  andClosedPath2:(BOOL)closed2
 {
-    return [[DKUIBezierPathIntersectionPoint alloc] initWithElementIndex:index1 andTValue:_tValue1 withElementIndex:index2 andTValue:_tValue2 andElementCount1:_elementCount1 andElementCount2:_elementCount2 andLengthUntilPath1Loc:_lenAtInter1 andLengthUntilPath2Loc:_lenAtInter2];
+    return [[DKUIBezierPathIntersectionPoint alloc] initWithElementIndex:index1
+                                                               andTValue:_tValue1
+                                                        withElementIndex:index2
+                                                               andTValue:_tValue2
+                                                        andElementCount1:_elementCount1
+                                                        andElementCount2:_elementCount2
+                                                  andLengthUntilPath1Loc:_lenAtInter1
+                                                  andLengthUntilPath2Loc:_lenAtInter2
+                                                          andPathLength1:pathlen1
+                                                          andPathLength2:pathlen2
+                                                          andClosedPath1:closed1
+                                                          andClosedPath2:closed2];
 }
 
-- (id)initWithElementIndex:(NSInteger)index1 andTValue:(CGFloat)_tValue1 withElementIndex:(NSInteger)index2 andTValue:(CGFloat)_tValue2 andElementCount1:(NSInteger)_elementCount1 andElementCount2:(NSInteger)_elementCount2 andLengthUntilPath1Loc:(CGFloat)_lenAtInter1 andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+- (id)initWithElementIndex:(NSInteger)index1
+                 andTValue:(CGFloat)_tValue1
+          withElementIndex:(NSInteger)index2
+                 andTValue:(CGFloat)_tValue2
+          andElementCount1:(NSInteger)_elementCount1
+          andElementCount2:(NSInteger)_elementCount2
+    andLengthUntilPath1Loc:(CGFloat)_lenAtInter1
+    andLengthUntilPath2Loc:(CGFloat)_lenAtInter2
+            andPathLength1:(CGFloat)pathlen1
+            andPathLength2:(CGFloat)pathlen2
+            andClosedPath1:(BOOL)closed1
+            andClosedPath2:(BOOL)closed2
 {
     if (self = [super init]) {
         elementIndex1 = index1;
@@ -62,6 +91,10 @@
         elementCount2 = _elementCount2;
         lenAtInter1 = _lenAtInter1;
         lenAtInter2 = _lenAtInter2;
+        _pathClosed1 = closed1;
+        _pathClosed2 = closed2;
+        _pathLength1 = pathlen1;
+        _pathLength2 = pathlen2;
         _matchedIntersections = [[NSMutableSet alloc] init];
     }
     return self;
@@ -97,7 +130,11 @@
                                                                                       andElementCount1:elementCount2
                                                                                       andElementCount2:elementCount1
                                                                                 andLengthUntilPath1Loc:lenAtInter2
-                                                                                andLengthUntilPath2Loc:lenAtInter1];
+                                                                                andLengthUntilPath2Loc:lenAtInter1
+                                                                                        andPathLength1:self.pathLength2
+                                                                                        andPathLength2:self.pathLength1
+                                                                                        andClosedPath1:self.pathClosed2
+                                                                                        andClosedPath2:self.pathClosed1];
     ret.bez1[0] = self.bez2[0];
     ret.bez1[1] = self.bez2[1];
     ret.bez1[2] = self.bez2[2];
@@ -108,8 +145,6 @@
     ret.bez2[3] = self.bez1[3];
     ret.mayCrossBoundary = self.mayCrossBoundary;
     ret.direction = self.direction;
-    ret.pathLength1 = self.pathLength2;
-    ret.pathLength2 = self.pathLength1;
 
     NSMutableArray<DKUIBezierPathIntersectionPoint *> *flippedPoints = [NSMutableArray array];
     for (DKUIBezierPathIntersectionPoint *p in self.matchedIntersections) {
