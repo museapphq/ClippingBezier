@@ -202,9 +202,11 @@
                            controlPoint1:points[0]
                            controlPoint2:points[1]];
                 break;
-            case kCGPathElementCloseSubpath:
-                [newPath closePath];
+            case kCGPathElementCloseSubpath: {
+                CGPoint startPoint = [self startPointForSubPathBeginningWithElementIndex:0];
+                [newPath addLineToPoint:startPoint];
                 break;
+            }
         }
     }
 
