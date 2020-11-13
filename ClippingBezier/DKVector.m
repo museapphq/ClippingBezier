@@ -132,7 +132,7 @@
     return CGPointMake(x2, y2);
 }
 
-- (CGFloat)angleBetween:(DKVector *)otherVector
+- (CGFloat)angleWithRespectTo:(DKVector *)otherVector
 {
     // angle with +ve x-axis, in the range (−π, π]
     float thetaA = atan2(otherVector.x, otherVector.y);

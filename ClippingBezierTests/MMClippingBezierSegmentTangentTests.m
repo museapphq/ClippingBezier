@@ -56,7 +56,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -88,7 +88,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -129,7 +129,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -154,7 +154,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -184,7 +184,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -216,7 +216,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -251,7 +251,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -295,7 +295,7 @@
                                                                                                  andBlue:blueSegments
                                                                                               lastWasRed:YES
                                                                                                     comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
 
 
     //
@@ -312,7 +312,7 @@
                                                                    andBlue:blueSegments
                                                                 lastWasRed:YES
                                                                       comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
 }
 
 - (void)testIntersectionSplittingLineElement
@@ -343,7 +343,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -367,7 +367,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -388,7 +388,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -409,7 +409,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -430,7 +430,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -451,7 +451,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -488,7 +488,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -528,7 +528,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -568,7 +568,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
     }
 }
 
@@ -610,7 +610,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 
     // but the reverse scissor, since it's tangent to the shape, will end up taking left turns.
@@ -620,7 +620,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is right turn");
     }
 }
 
@@ -660,7 +660,7 @@
                                                                                                  andBlue:blueSegments
                                                                                               lastWasRed:YES
                                                                                                     comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
 }
 
 - (void)testLineThroughOval
@@ -689,7 +689,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -720,7 +720,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -757,7 +757,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -795,7 +795,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -819,7 +819,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -844,7 +844,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -870,7 +870,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
     }
 }
 
@@ -904,7 +904,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -930,7 +930,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -973,7 +973,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
     }
     for (DKUIBezierPathClippedSegment *redSegment in [redSegments subarrayWithRange:NSMakeRange(6, 2)]) {
         DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
@@ -981,7 +981,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
     }
 
     // left turn is all that's available for this one...
@@ -991,7 +991,7 @@
                                                                                                  andBlue:blueSegments
                                                                                               lastWasRed:YES
                                                                                                     comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
 }
 
 - (void)testSingleExternalTangents
@@ -1031,7 +1031,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] >= 0, @"angle is right turn");
     }
 }
 
@@ -1083,7 +1083,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -1142,7 +1142,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] < 0, @"angle is left turn");
     }
 }
 
@@ -1169,7 +1169,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -1197,7 +1197,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -1221,7 +1221,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -1247,7 +1247,7 @@
                                                                                                      andBlue:blueSegments
                                                                                                   lastWasRed:YES
                                                                                                         comp:[shapePath isClockwise]];
-        XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+        XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
 }
 
@@ -1284,7 +1284,7 @@
                                                                                                  andBlue:blueSegments
                                                                                               lastWasRed:YES
                                                                                                     comp:[shapePath isClockwise]];
-    XCTAssertTrue([redSegment.endVector angleBetween:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
+    XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     XCTAssertTrue([blueSegments containsObject:currentSegmentCandidate], @"best match is blue");
 }
 

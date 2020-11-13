@@ -44,7 +44,7 @@
 
 - (CGPoint)mirrorPoint:(CGPoint)point aroundPoint:(CGPoint)startPoint;
 
-- (CGFloat)angleBetween:(DKVector *)otherVector;
+- (CGFloat)angleWithRespectTo:(DKVector *)otherVector;
 
 - (CGPoint)asCGPoint;
 @end

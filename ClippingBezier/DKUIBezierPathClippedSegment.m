@@ -157,9 +157,9 @@
  * calculates the angle between this segment's endpoint and the
  * otherInter's startpoint
  */
-- (CGFloat)angleBetween:(DKUIBezierPathClippedSegment *)otherInter
+- (CGFloat)angleWithRespectTo:(DKUIBezierPathClippedSegment *)otherInter
 {
-    return [[self endVector] angleBetween:[otherInter startVector]];
+    return [[self endVector] angleWithRespectTo:[otherInter startVector]];
 }
 
 - (DKVector *)endVector

@@ -51,7 +51,7 @@
 /// The intersections' elementIndex1/2 remain unchanged, the only switch from start <=> end
 - (DKUIBezierPathClippedSegment *)reversedSegment;
 
-- (CGFloat)angleBetween:(DKUIBezierPathClippedSegment *)otherInter;
+- (CGFloat)angleWithRespectTo:(DKUIBezierPathClippedSegment *)otherInter;
 
 - (DKVector *)endVector;
 

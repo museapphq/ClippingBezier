@@ -1697,7 +1697,7 @@ static NSInteger segmentCompareCount = 0;
             DKUIBezierPathClippedSegment *flippedBlue = [blue flippedSegment];
             if ([[red startIntersection] isEqualToIntersection:[flippedBlue startIntersection]] &&
                 [[red endIntersection] isEqualToIntersection:[flippedBlue endIntersection]]) {
-                CGFloat angleBetween = [[red reversedSegment] angleBetween:flippedBlue];
+                CGFloat angleBetween = [[red reversedSegment] angleWithRespectTo:flippedBlue];
                 if ([self round:angleBetween to:6] == [self round:M_PI to:6] ||
                     [self round:angleBetween to:6] == [self round:-M_PI to:6]) {
                     //
@@ -1709,7 +1709,7 @@ static NSInteger segmentCompareCount = 0;
                 }
             } else if ([[red startIntersection] isEqualToIntersection:[flippedBlue endIntersection]] &&
                        [[red endIntersection] isEqualToIntersection:[flippedBlue startIntersection]]) {
-                CGFloat angleBetween = [red angleBetween:flippedBlue];
+                CGFloat angleBetween = [red angleWithRespectTo:flippedBlue];
                 if ([self round:angleBetween to:6] == [self round:M_PI to:6] ||
                     [self round:angleBetween to:6] == [self round:-M_PI to:6]) {
                     //
@@ -1733,7 +1733,7 @@ static NSInteger segmentCompareCount = 0;
             DKUIBezierPathClippedSegment *flippedBlue = [blue flippedSegment];
             if ([[red startIntersection] isEqualToIntersection:[flippedBlue startIntersection]] &&
                 [[red endIntersection] isEqualToIntersection:[flippedBlue endIntersection]]) {
-                CGFloat angleBetween = [[red reversedSegment] angleBetween:flippedBlue];
+                CGFloat angleBetween = [[red reversedSegment] angleWithRespectTo:flippedBlue];
                 if ([self round:angleBetween to:6] == [self round:M_PI to:6] ||
                     [self round:angleBetween to:6] == [self round:-M_PI to:6]) {
                     //
@@ -1745,7 +1745,7 @@ static NSInteger segmentCompareCount = 0;
                 }
             } else if ([[red startIntersection] isEqualToIntersection:[flippedBlue endIntersection]] &&
                        [[red endIntersection] isEqualToIntersection:[flippedBlue startIntersection]]) {
-                CGFloat angleBetween = [red angleBetween:flippedBlue];
+                CGFloat angleBetween = [red angleWithRespectTo:flippedBlue];
                 if ([self round:angleBetween to:6] == [self round:M_PI to:6] ||
                     [self round:angleBetween to:6] == [self round:-M_PI to:6]) {
                     //
@@ -1915,9 +1915,9 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
                     //                        NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
-                    if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
+                    if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                         // never allow exactly backwards tangents
-                    } else if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
+                    } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
                         // never allow exactly backwards tangents
                     } else {
                         currentSegmentCandidate = blueSeg;
@@ -1929,8 +1929,8 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *newPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
                     //                        NSLog(@"angle: %f vs %f", [currSeg angleBetween:currPoss], [currSeg angleBetween:newPoss]);
                     if (gt) {
-                        if ([currSeg angleBetween:newPoss] > [currSeg angleBetween:currPoss]) {
-                            if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
+                        if ([currSeg angleWithRespectTo:newPoss] > [currSeg angleWithRespectTo:currPoss]) {
+                            if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
                                 // never allow exactly backwards tangents
                             } else {
                                 currentSegmentCandidate = blueSeg;
@@ -1938,8 +1938,8 @@ static NSInteger segmentCompareCount = 0;
                             }
                         }
                     } else {
-                        if ([currSeg angleBetween:newPoss] < [currSeg angleBetween:currPoss]) {
-                            if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
+                        if ([currSeg angleWithRespectTo:newPoss] < [currSeg angleWithRespectTo:currPoss]) {
+                            if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
                                 // never allow exactly backwards tangents
                             } else {
                                 currentSegmentCandidate = blueSeg;
@@ -1966,9 +1966,9 @@ static NSInteger segmentCompareCount = 0;
                 DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                 DKVector *currPoss = [[redSeg pathSegment] tangentNearStart].tangent;
                 //                    NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
-                if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
+                if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                     // never allow exactly backwards tangents
-                } else if ([UIBezierPath round:[currSeg angleBetween:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
+                } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
                     // never allow exactly backwards tangents
                 } else {
                     currentSegmentCandidate = redSeg;
@@ -1979,8 +1979,8 @@ static NSInteger segmentCompareCount = 0;
                 DKVector *currPoss = [[currentSegmentCandidate pathSegment] tangentNearStart].tangent;
                 DKVector *newPoss = [[redSeg pathSegment] tangentNearStart].tangent;
                 if (gt) {
-                    if ([currSeg angleBetween:newPoss] >= [currSeg angleBetween:currPoss]) {
-                        if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
+                    if ([currSeg angleWithRespectTo:newPoss] >= [currSeg angleWithRespectTo:currPoss]) {
+                        if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
                             // never allow exactly backwards tangents
                         } else {
                             currentSegmentCandidate = redSeg;
@@ -1988,8 +1988,8 @@ static NSInteger segmentCompareCount = 0;
                         }
                     }
                 } else {
-                    if ([currSeg angleBetween:newPoss] <= [currSeg angleBetween:currPoss]) {
-                        if ([UIBezierPath round:[currSeg angleBetween:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
+                    if ([currSeg angleWithRespectTo:newPoss] <= [currSeg angleWithRespectTo:currPoss]) {
+                        if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:-M_PI to:3]) {
                             // never allow exactly backwards tangents
                         } else {
                             currentSegmentCandidate = redSeg;
