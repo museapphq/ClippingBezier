@@ -2309,4 +2309,19 @@
     XCTAssertEqual([blueSegments count], (NSUInteger)1, @"the curves do intersect");
 }
 
+- (void)testCircleThroughRectangleFindsRedGreenAndBlueSegments2
+{
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+
+    NSArray *redGreenBlueSegs = [UIBezierPath redAndGreenAndBlueSegmentsCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
+    NSArray *redSegments = [redGreenBlueSegs firstObject];
+    NSArray *greenSegments = [redGreenBlueSegs objectAtIndex:1];
+    NSArray *blueSegments = [redGreenBlueSegs lastObject];
+
+    XCTAssertEqual([redSegments count], (NSUInteger)2, @"correct number of segments");
+    XCTAssertEqual([greenSegments count], (NSUInteger)1, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+}
+
 @end

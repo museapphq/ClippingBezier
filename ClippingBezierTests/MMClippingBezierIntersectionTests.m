@@ -1326,7 +1326,7 @@
     NSArray *shapeToScissorIntersections = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:&beginsInside];
 
     XCTAssertEqual([scissorToShapeIntersections count], [shapeToScissorIntersections count], @"count of intersections matches");
-    XCTAssertEqual([scissorToShapeIntersections count], (NSUInteger)6, @"count of intersections matches");
+    XCTAssertEqual([scissorToShapeIntersections count], (NSUInteger)3, @"count of intersections matches");
 }
 
 @end

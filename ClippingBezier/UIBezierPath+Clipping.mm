@@ -306,58 +306,15 @@ static NSInteger segmentCompareCount = 0;
             return NSOrderedDescending;
         }];
 
-        [foundIntersections enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            DKUIBezierPathIntersectionPoint *intersection = obj;
-            if (!didFlipPathNumbers) {
-                intersection.pathLength1 = path1EstimatedLength;
-                intersection.pathLength2 = path2EstimatedLength;
-            } else {
-                intersection.pathLength1 = path2EstimatedLength;
-                intersection.pathLength2 = path1EstimatedLength;
-            }
-        }];
-
         // save all of our intersections, we may need this reference
         // later if we filter out too many intersections as duplicates
         NSArray *allFoundIntersections = foundIntersections;
 
-        // iterate over the intersections and filter out duplicates
-        __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
-        NSMutableSet<DKUIBezierPathIntersectionPoint *> *interToPrune = [NSMutableSet set];
-        foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
-            if (obj == lastInter) {
-                // we only have a single intersection
-                return YES;
-            }
-            DKUIBezierPathIntersectionPoint *intersection = obj;
-            BOOL isDistinctIntersection = ![obj matchesElementEndpointWithIntersection:lastInter];
-            CGPoint interLoc = intersection.location1;
-            CGPoint lastLoc = lastInter.location1;
-            CGPoint interLoc2 = intersection.location2;
-            CGPoint lastLoc2 = lastInter.location2;
-            if (isDistinctIntersection) {
-                if ((ABS(interLoc.x - lastLoc.x) < kUIBezierClosenessPrecision &&
-                     ABS(interLoc.y - lastLoc.y) < kUIBezierClosenessPrecision) ||
-                    (ABS(interLoc2.x - lastLoc2.x) < kUIBezierClosenessPrecision &&
-                     ABS(interLoc2.y - lastLoc2.y) < kUIBezierClosenessPrecision)) {
-                    // the points are close, but they might not necessarily be the same intersection.
-                    // for instance, a curve could be a very very very sharp V, and the intersection could
-                    // be slicing through the middle of the V to look like an ∀
-                    // the distance between the intersections along the - might be super small,
-                    // but along the V is much much further and should count as two intersections
-
-                    BOOL closeLocation1 = [lastInter isCloseToIntersection:intersection withPrecision:kUIBezierClosenessPrecision];
-                    BOOL closeLocation2 = [[lastInter flipped] isCloseToIntersection:[intersection flipped] withPrecision:kUIBezierClosenessPrecision];
-
-                    isDistinctIntersection = !closeLocation1 || !closeLocation2;
-                }
-            }
-
+        [foundIntersections enumerateObjectsUsingBlock:^(DKUIBezierPathIntersectionPoint *_Nonnull intersection, NSUInteger idx, BOOL *_Nonnull stop) {
             // Using the following tangents, determine if the intersection is entering or leaving the shape
             // or if the intersection is tangent to the shape.
             CGPoint shapeCGTan = [closedPath tangentOnPathAtElement:intersection.elementIndex2 andTValue:intersection.tValue2];
             CGPoint myCGTan = [self tangentOnPathAtElement:intersection.elementIndex1 andTValue:intersection.tValue1];
-
             DKVector *shapeTan = [DKVector vectorWithX:shapeCGTan.x andY:shapeCGTan.y];
             DKVector *myTan = [DKVector vectorWithX:myCGTan.x andY:myCGTan.y];
             CGFloat angle = [myTan angleWithRespectTo:shapeTan];
@@ -435,6 +392,39 @@ static NSInteger segmentCompareCount = 0;
                 } else {
                     // they disagree on right/left, so treat it as same
                     [intersection setDirection:kDKIntersectionDirectionSame];
+                }
+            }
+        }];
+
+        // iterate over the intersections and filter out duplicates
+        __block DKUIBezierPathIntersectionPoint *lastInter = [foundIntersections lastObject];
+        NSMutableSet<DKUIBezierPathIntersectionPoint *> *interToPrune = [NSMutableSet set];
+        foundIntersections = [NSMutableArray arrayWithArray:[foundIntersections filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^(id obj, NSDictionary *bindings) {
+            if (obj == lastInter) {
+                // we only have a single intersection
+                return YES;
+            }
+            DKUIBezierPathIntersectionPoint *intersection = obj;
+            BOOL isDistinctIntersection = ![obj matchesElementEndpointWithIntersection:lastInter];
+            CGPoint interLoc = intersection.location1;
+            CGPoint lastLoc = lastInter.location1;
+            CGPoint interLoc2 = intersection.location2;
+            CGPoint lastLoc2 = lastInter.location2;
+            if (isDistinctIntersection) {
+                if ((ABS(interLoc.x - lastLoc.x) < kUIBezierClosenessPrecision &&
+                     ABS(interLoc.y - lastLoc.y) < kUIBezierClosenessPrecision) ||
+                    (ABS(interLoc2.x - lastLoc2.x) < kUIBezierClosenessPrecision &&
+                     ABS(interLoc2.y - lastLoc2.y) < kUIBezierClosenessPrecision)) {
+                    // the points are close, but they might not necessarily be the same intersection.
+                    // for instance, a curve could be a very very very sharp V, and the intersection could
+                    // be slicing through the middle of the V to look like an ∀
+                    // the distance between the intersections along the - might be super small,
+                    // but along the V is much much further and should count as two intersections
+
+                    BOOL closeLocation1 = [lastInter isCloseToIntersection:intersection withPrecision:kUIBezierClosenessPrecision];
+                    BOOL closeLocation2 = [[lastInter flipped] isCloseToIntersection:[intersection flipped] withPrecision:kUIBezierClosenessPrecision];
+
+                    isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
             }
 
@@ -615,11 +605,38 @@ static NSInteger segmentCompareCount = 0;
                     intersection.mayCrossBoundary = isInside != isInsideAfterIntersection;
                 }
 
-                // TODO: detect the direction that the intersection moves.
-
                 // setup for next iteration of loop
                 lastIntersection = intersection;
                 isInside = isInsideAfterIntersection;
+            }
+        }
+
+        for (int i = 1; i < [foundIntersections count]; i++) {
+            DKUIBezierPathIntersectionPoint *inter1 = foundIntersections[i - 1];
+            DKUIBezierPathIntersectionPoint *inter2 = foundIntersections[i];
+
+            if ([inter1 isCloseToIntersection:inter2 withPrecision:kUIBezierClosenessPrecision]) {
+                if (inter1.direction == kDKIntersectionDirectionSame && inter2.direction == kDKIntersectionDirectionSame) {
+                    [inter1.matchedIntersections addObjectsFromArray:[inter2.matchedIntersections allObjects]];
+                    [inter1.matchedIntersections addObject:inter2];
+                    [foundIntersections removeObjectAtIndex:i];
+                    i -= 1;
+                } else if (inter1.direction == kDKIntersectionDirectionSame) {
+                    [inter2.matchedIntersections addObjectsFromArray:[inter1.matchedIntersections allObjects]];
+                    [inter2.matchedIntersections addObject:inter1];
+                    [foundIntersections removeObjectAtIndex:i - 1];
+                    i -= 1;
+                } else if (inter2.direction == kDKIntersectionDirectionSame) {
+                    [inter1.matchedIntersections addObjectsFromArray:[inter2.matchedIntersections allObjects]];
+                    [inter1.matchedIntersections addObject:inter2];
+                    [foundIntersections removeObjectAtIndex:i];
+                    i -= 1;
+                } else if (inter1.direction == inter2.direction) {
+                    [inter1.matchedIntersections addObjectsFromArray:[inter2.matchedIntersections allObjects]];
+                    [inter1.matchedIntersections addObject:inter2];
+                    [foundIntersections removeObjectAtIndex:i];
+                    i -= 1;
+                }
             }
         }
 
@@ -1187,7 +1204,7 @@ static NSInteger segmentCompareCount = 0;
                                                                                              andLengthUntilPath1Loc:inter.lenAtInter1 + pathLengthForPreviousSubpaths
                                                                                              andLengthUntilPath2Loc:inter.lenAtInter2
                                                                                                      andPathLength1:scissorPath.length
-                                                                                                     andPathLength2:inter.pathLength2
+                                                                                                     andPathLength2:shapePath.length
                                                                                                      andClosedPath1:scissorPath.isClosed
                                                                                                      andClosedPath2:shapePath.isClosed];
         ret.bez1[0] = inter.bez1[0];
@@ -1395,7 +1412,7 @@ static NSInteger segmentCompareCount = 0;
     // because we're going to reuse and resort the tValuesOfIntersectionPoints1.
     // this solves rounding error that happens when intersections generate slightly differently
     // depending on the order of paths sent in
-    NSArray<DKUIBezierPathIntersectionPoint *> *intersectionsWithBoundaryInformation = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
+    NSMutableArray<DKUIBezierPathIntersectionPoint *> *intersectionsWithBoundaryInformation = [[shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil] mutableCopy];
     //
     // this array will be the intersections between the shape and the scissor.
     // we'll use the exact same intersection objects (flipped, b/c we're attacking from
