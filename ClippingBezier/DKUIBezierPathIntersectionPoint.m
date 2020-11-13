@@ -11,6 +11,8 @@
 #import "DKUIBezierPathIntersectionPoint+Private.h"
 #import <PerformanceBezier/PerformanceBezier.h>
 
+#define kUIBezierClosenessPrecision 0.5
+
 @implementation DKUIBezierPathIntersectionPoint {
     NSInteger elementIndex1;
     CGFloat tValue1;
@@ -131,8 +133,8 @@
                                                                                       andElementCount2:elementCount1
                                                                                 andLengthUntilPath1Loc:lenAtInter2
                                                                                 andLengthUntilPath2Loc:lenAtInter1
-                                                                                        andPathLength1:self.pathLength1
-                                                                                        andPathLength2:self.pathLength2
+                                                                                        andPathLength1:self.pathLength2
+                                                                                        andPathLength2:self.pathLength1
                                                                                         andClosedPath1:self.pathClosed2
                                                                                         andClosedPath2:self.pathClosed1];
     ret.bez1[0] = self.bez2[0];
@@ -164,10 +166,25 @@
 {
     CGFloat myDistFromEnd1 = [self pathClosed1] ? MIN(self.lenAtInter1, ABS(self.pathLength1 - self.lenAtInter1)) : self.lenAtInter1;
     CGFloat otherDistFromEnd1 = [other pathClosed1] ? MIN(other.lenAtInter1, ABS(other.pathLength1 - other.lenAtInter1)) : other.lenAtInter1;
-    CGFloat compare1 = ABS(myDistFromEnd1 - otherDistFromEnd1);
-
     CGFloat myDistFromEnd2 = [self pathClosed2] ? MIN(self.lenAtInter2, ABS(self.pathLength2 - self.lenAtInter2)) : self.lenAtInter2;
     CGFloat otherDistFromEnd2 = [other pathClosed2] ? MIN(other.lenAtInter2, ABS(other.pathLength2 - other.lenAtInter2)) : other.lenAtInter2;
+
+    // account for the closed path. when these are true, it means we've found
+    // the shortest length by looping backward around the path
+    if (myDistFromEnd1 < lenAtInter1) {
+        myDistFromEnd1 = -myDistFromEnd1;
+    }
+    if (otherDistFromEnd1 < other.lenAtInter1) {
+        otherDistFromEnd1 = -otherDistFromEnd1;
+    }
+    if (myDistFromEnd2 < lenAtInter2) {
+        myDistFromEnd2 = -myDistFromEnd2;
+    }
+    if (otherDistFromEnd2 < other.lenAtInter2) {
+        otherDistFromEnd2 = -otherDistFromEnd2;
+    }
+
+    CGFloat compare1 = ABS(myDistFromEnd1 - otherDistFromEnd1);
     CGFloat compare2 = ABS(myDistFromEnd2 - otherDistFromEnd2);
 
     return (compare1 < precision && compare2 < precision);
@@ -221,6 +238,10 @@
         self.tValue2 == [obj tValue2]) {
         ret = YES;
     }
+    if (!ret) {
+        //        ret = [self isCloseToIntersection:obj withPrecision:kUIBezierClosenessPrecision] && [self direction] == [obj direction];
+    }
+
     return ret;
 }
 

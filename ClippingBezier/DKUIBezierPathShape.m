@@ -38,7 +38,8 @@
 
 - (BOOL)isClosed
 {
-    return [[self startingPoint] matchesElementEndpointWithIntersection:[self endingPoint]];
+    return [[self startingPoint] matchesElementEndpointWithIntersection:[self endingPoint]] ||
+        [[self startingPoint] isEqualToIntersection:[self endingPoint]];
 }
 
 - (UIBezierPath *)fullPath
@@ -145,17 +146,17 @@
 
 - (DKUIBezierPathShape *)reversedShape
 {
-    DKUIBezierPathShape *flipped = [[DKUIBezierPathShape alloc] init];
+    DKUIBezierPathShape *reversed = [[DKUIBezierPathShape alloc] init];
 
     [[self segments] enumerateObjectsUsingBlock:^(DKUIBezierPathClippedSegment *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-        [[flipped segments] insertObject:[obj reversedSegment] atIndex:0];
+        [[reversed segments] insertObject:[obj reversedSegment] atIndex:0];
     }];
 
     [[self holes] enumerateObjectsUsingBlock:^(DKUIBezierPathShape *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-        [[flipped holes] addObject:[obj reversedShape]];
+        [[reversed holes] addObject:[obj reversedShape]];
     }];
 
-    return flipped;
+    return reversed;
 }
 
 #pragma mark - Merge Shapes
