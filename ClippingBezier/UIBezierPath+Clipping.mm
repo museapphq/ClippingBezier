@@ -93,92 +93,28 @@ static NSInteger segmentCompareCount = 0;
 
 #pragma mark - Intersection Finding
 
+- (NSSet<NSNumber *> *)indicesOfElementsInPath:(UIBezierPath *)path subRange:(NSRange)subRange thatOverlapWithRect:(CGRect)rect {
 
-- (NSArray<NSValue *> *)elementIndexWhereOverlapOccursWithClosedPath:(UIBezierPath *)closedPath
-{
-    UIBezierPath *path1;
-    UIBezierPath *path2;
+    NSSet<NSNumber *> *overlapIndices = [NSSet set];
 
-    BOOL didFlipPathNumbers = NO;
-//    if (closedPath.elementCount < self.elementCount) {
-//        path1 = closedPath;
-//        path2 = self;
-//        didFlipPathNumbers = YES;
-//    } else {
-        path1 = self;
-        path2 = closedPath;
-//    }
-
-    NSInteger elementCount1 = path1.elementCount;
-    NSInteger elementCount2 = path2.elementCount;
-
-    CGRect path1Bounds = [path1 bounds];
-    CGRect path2Bounds = [path2 bounds];
-    // expand the bounds by 1px, just so we're sure to see overlapping bounds for tangent paths
-    path1Bounds = CGRectInset(path1Bounds, -1, -1);
-    path2Bounds = CGRectInset(path2Bounds, -1, -1);
-
-    if (!CGRectIntersectsRect(path1Bounds, path2Bounds)) {
-        return @[];
+    UIBezierPath *currentSubPath = [path bezierPathWithRange:subRange];
+    if (CGRectIntersectsRect(CGRectInset(currentSubPath.bounds, -1, -1), rect)) {
+        if (subRange.length <= 2) {
+            for (NSUInteger i = subRange.location; i < subRange.location + subRange.length; i++) {
+                overlapIndices = [overlapIndices setByAddingObject:@(i)];
+            }
+        } else {
+            NSInteger leftLength = subRange.length % 2 == 0 ? subRange.length / 2 : (subRange.length + 1) / 2;
+            NSInteger rightLength = subRange.length - leftLength;
+            NSRange leftRange = NSMakeRange(subRange.location, MAX(2, leftLength));
+            NSRange rightRange = NSMakeRange(subRange.location + leftLength, MAX(2, rightLength));
+            overlapIndices = [overlapIndices setByAddingObjectsFromSet:[self indicesOfElementsInPath:path subRange:leftRange thatOverlapWithRect:rect]];
+            overlapIndices = [overlapIndices setByAddingObjectsFromSet:[self indicesOfElementsInPath:path subRange:rightRange thatOverlapWithRect:rect]];
+        }
     }
 
-
-    __block CGPoint path1StartingPoint = path1.firstPoint;
-    __block CGPoint lastPath1Point = CGPointNotFound;
-    CGPoint bez1_[4];
-    CGPoint *bez1 = bez1_;
-
-    [path1 iteratePathWithBlock:^(CGPathElement path1Element, NSUInteger path1ElementIndex) {
-        NSLog(@"testing element %lu", path1ElementIndex);
-        CGRect path1ElementBounds = [UIBezierPath boundsForElement:path1Element withStartPoint:lastPath1Point andSubPathStartingPoint:path1StartingPoint];
-        // expand the bounds by 1px, just so we're sure to see overlapping bounds for tangent paths
-        path1ElementBounds = CGRectInset(path1ElementBounds, -1, -1);
-        lastPath1Point = [UIBezierPath fillCGPoints:bez1
-                                        withElement:path1Element
-                          givenElementStartingPoint:lastPath1Point
-                            andSubPathStartingPoint:path1StartingPoint];
-
-
-        NSRange previousSubPathRange;
-        NSRange currentSubPathRange = NSMakeRange(0, ceil(CGFloat(elementCount2) / 2));
-        UIBezierPath *currentSubPath = [path2 bezierPathWithRange:currentSubPathRange];
-        bool intersectionFound = NO;
-
-        while (currentSubPathRange.length >= 2) {
-            NSLog(@"checking intersection for range (%lu, %lu)", currentSubPathRange.location, currentSubPathRange.length);
-
-            CGRect subPathBounds = CGRectInset(currentSubPath.bounds, -1, -1);
-            if (CGRectIntersectsRect(subPathBounds, path1ElementBounds)) {
-                NSLog(@"intersects!");
-                if (currentSubPathRange.length == 2) {
-                    intersectionFound = YES;
-                    break;
-                }
-                previousSubPathRange = currentSubPathRange;
-                currentSubPathRange = NSMakeRange(currentSubPathRange.location, ceil(currentSubPathRange.length / 2));
-            } else {
-                NSLog(@"doesn't intersect!");
-                if (currentSubPathRange.location + currentSubPathRange.length <= previousSubPathRange.location + previousSubPathRange.length) {
-                    previousSubPathRange = currentSubPathRange;
-                    currentSubPathRange = NSMakeRange(currentSubPathRange.location + currentSubPathRange.length, currentSubPathRange.length);
-                } else {
-                    break;
-                }
-            }
-
-            currentSubPath = [path2 bezierPathWithRange:currentSubPathRange];
-        }
-
-        if (intersectionFound) {
-            NSLog(@"found intersection at range (%lu, %lu)", currentSubPathRange.location, currentSubPathRange.length);
-        } else {
-            NSLog(@"found no intersections for element %li", path1ElementIndex);
-        }
-    }];
-
-    return @[];
+    return overlapIndices;
 }
-
 
 /**
  * this will return all intersections points between
@@ -280,36 +216,23 @@ static NSInteger segmentCompareCount = 0;
                     __block CGPoint path2StartingPoint = path2.firstPoint;
                     // big iterating over path2 to find all intersections with this element from path1
 
-                    NSRange previousSubPathRange;
-                    NSRange currentSubPathRange = NSMakeRange(0, ceil(CGFloat(elementCount2) / 2));
-                    UIBezierPath *currentSubPath = [path2 bezierPathWithRange:currentSubPathRange];
-                    bool intersectionFound = NO;
+                    NSSet<NSNumber *> *elementIndicesWithIntersections = [self indicesOfElementsInPath: path2
+                                                                                                subRange:NSMakeRange(0, elementCount2)
+                                                                                     thatOverlapWithRect:path1ElementBounds];
 
-                    while (currentSubPathRange.length >= 2) {
-
-                        CGRect subPathBounds = CGRectInset(currentSubPath.bounds, -1, -1);
-                        if (CGRectIntersectsRect(subPathBounds, path1ElementBounds)) {
-                            if (currentSubPathRange.length == 2) {
-                                intersectionFound = YES;
-                                break;
+                    if (elementIndicesWithIntersections.count > 0) {
+                        for (NSNumber *idxNum in elementIndicesWithIntersections) {
+                            NSInteger i = [idxNum integerValue];
+                            CGPoint associatedPoints[3];
+                            CGPathElement path2Element = [path2 elementAtIndex:i associatedPoints:associatedPoints];
+                            if (i > 0) {
+                                CGPoint previousAssociatedPoints[3];
+                                [path2 elementAtIndex:i - 1 associatedPoints:previousAssociatedPoints];
+                                bez2[0] = previousAssociatedPoints[2];
+                                bez2[1] = associatedPoints[0];
+                                bez2[2] = associatedPoints[1];
+                                bez2[3] = associatedPoints[2];
                             }
-                            previousSubPathRange = currentSubPathRange;
-                            currentSubPathRange = NSMakeRange(currentSubPathRange.location, ceil(currentSubPathRange.length / 2));
-                        } else {
-                            if (currentSubPathRange.location + currentSubPathRange.length <= previousSubPathRange.location + previousSubPathRange.length) {
-                                previousSubPathRange = currentSubPathRange;
-                                currentSubPathRange = NSMakeRange(currentSubPathRange.location + currentSubPathRange.length, currentSubPathRange.length);
-                            } else {
-                                break;
-                            }
-                        }
-
-                        currentSubPath = [path2 bezierPathWithRange:currentSubPathRange];
-                    }
-
-                    if (intersectionFound) {
-                        for (long i = currentSubPathRange.location; i < currentSubPathRange.location + currentSubPathRange.length; i++) {
-                            CGPathElement path2Element = [path2 elementAtIndex:i];
 
                             if (path2Element.type != kCGPathElementMoveToPoint) {
                                     // track the number of segment comparisons we have to do
@@ -355,6 +278,19 @@ static NSInteger segmentCompareCount = 0;
                                 // loop through the intersections that we've found, and add in
                                 // some context that we can save for each one.
                                 for (NSValue *val in intersections) {
+                                    NSLog(@"intersection of path1 el \(%i) and path2 el \(%i)", path1ElementIndex, i);
+//                                    NSLog(@"bez1:");
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez1[0]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez1[1]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez1[2]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez1[3]]);
+//                                    NSLog(@"bez2:");
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez2[0]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez2[1]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez2[2]]);
+//                                    NSLog(@"%@", [UIBezierPath stringFromPoint:bez2[3]]);
+//                                    NSLog(@"===========");
+
                                     CGFloat tValue1 = [val CGPointValue].y;
                                     CGFloat tValue2 = [val CGPointValue].x;
                                     // estimated length along each curve until the intersection is hit
@@ -2891,5 +2827,10 @@ CGPointLerp(CGPoint a, CGPoint b, CGFloat t)
     double factor = pow(10, digits);
     return roundf(val * factor) / factor;
 }
+
++ (NSString *)stringFromPoint:(CGPoint)point {
+    return [NSString stringWithFormat:@"(%f / %f)", point.x, point.y];
+}
+
 
 @end
