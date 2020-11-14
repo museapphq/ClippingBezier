@@ -18,4 +18,6 @@
 
 - (CGPoint)pointOnPathAtElement:(NSInteger)elementIndex andTValue:(CGFloat)tVal;
 
+- (CGFloat)effectiveTDistanceFromElement:(NSInteger)elementIndex1 andTValue:(CGFloat)tVal1 toElement:(NSInteger)elementIndex2 andTValue:(CGFloat)tVal2;
+
 @end
