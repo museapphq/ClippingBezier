@@ -328,6 +328,18 @@ static NSInteger segmentCompareCount = 0;
             CGPoint lastLoc = lastInter.location1;
             CGPoint interLoc2 = intersection.location2;
             CGPoint lastLoc2 = lastInter.location2;
+
+
+            CGFloat closeT = [self effectiveTDistanceFromElement:[lastInter elementIndex1]
+                                                       andTValue:[lastInter tValue1]
+                                                       toElement:[intersection elementIndex1]
+                                                       andTValue:[intersection tValue1]];
+            if (isDistinctIntersection && ABS(closeT) < kUIBezierClippingPrecision) {
+                // The points are not actually very far apart at all in terms of t-distance. only bother to check
+                // pixel closeness if our t-values are at all far apart.
+                isDistinctIntersection = NO;
+            }
+
             if (isDistinctIntersection) {
                 if ((ABS(interLoc.x - lastLoc.x) < kUIBezierClosenessPrecision &&
                      ABS(interLoc.y - lastLoc.y) < kUIBezierClosenessPrecision) ||
