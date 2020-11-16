@@ -30,6 +30,6 @@
 
 - (UIBezierPath *)bezierPathByTrimmingToLength:(CGFloat)trimLength withMaximumError:(CGFloat)err;
 
-- (UIBezierPath *)bezierPathWithRange:(NSRange)range;
+- (CGRect)boundsForSubPathWithRange:(NSRange)range;
 
 @end

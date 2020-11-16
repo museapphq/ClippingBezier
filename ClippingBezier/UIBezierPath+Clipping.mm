@@ -93,27 +93,33 @@ static NSInteger segmentCompareCount = 0;
 
 #pragma mark - Intersection Finding
 
-- (NSSet<NSNumber *> *)indicesOfElementsInPath:(UIBezierPath *)path subRange:(NSRange)subRange thatOverlapWithRect:(CGRect)rect {
+- (NSMutableSet<NSNumber *> *)indicesOfElementsInPath:(UIBezierPath *)path subRange:(NSRange)subRange thatOverlapWithRect:(CGRect)rect {
 
-    NSSet<NSNumber *> *overlapIndices = [NSSet set];
+    __block NSMutableSet<NSNumber *> *foundIndices = [NSMutableSet set];
 
-    UIBezierPath *currentSubPath = [path bezierPathWithRange:subRange];
-    if (CGRectIntersectsRect(CGRectInset(currentSubPath.bounds, -1, -1), rect)) {
-        if (subRange.length <= 2) {
-            for (NSUInteger i = subRange.location; i < subRange.location + subRange.length && i < self.elementCount; i++) {
-                overlapIndices = [overlapIndices setByAddingObject:@(i)];
+    __block __weak void (^weak_findIndicesOfElementsInPath)(UIBezierPath *path, NSRange subRange, CGRect rect);
+    void (^findIndicesOfElementsInPath)(UIBezierPath *path, NSRange subRange, CGRect rect);
+    weak_findIndicesOfElementsInPath = findIndicesOfElementsInPath = ^(UIBezierPath *path, NSRange subRange, CGRect rect) {
+
+        CGRect currentSubPathBounds = [path boundsForSubPathWithRange:subRange];
+        if (CGRectIntersectsRect(CGRectInset(currentSubPathBounds, -1, -1), rect)) {
+            if (subRange.length <= 2) {
+                for (NSUInteger i = subRange.location; i < subRange.location + subRange.length && i < self.elementCount; i++) {
+                    [foundIndices addObject:@(i)];
+                }
+            } else {
+                NSInteger leftLength = subRange.length % 2 == 0 ? subRange.length / 2 : (subRange.length + 1) / 2;
+                NSInteger rightLength = subRange.length - leftLength;
+                NSRange leftRange = NSMakeRange(subRange.location, MAX(2, leftLength));
+                NSRange rightRange = NSMakeRange(subRange.location + leftLength, MAX(2, rightLength));
+                weak_findIndicesOfElementsInPath(path, leftRange, rect);
+                weak_findIndicesOfElementsInPath(path, rightRange, rect);
             }
-        } else {
-            NSInteger leftLength = subRange.length % 2 == 0 ? subRange.length / 2 : (subRange.length + 1) / 2;
-            NSInteger rightLength = subRange.length - leftLength;
-            NSRange leftRange = NSMakeRange(subRange.location, MAX(2, leftLength));
-            NSRange rightRange = NSMakeRange(subRange.location + leftLength, MAX(2, rightLength));
-            overlapIndices = [overlapIndices setByAddingObjectsFromSet:[self indicesOfElementsInPath:path subRange:leftRange thatOverlapWithRect:rect]];
-            overlapIndices = [overlapIndices setByAddingObjectsFromSet:[self indicesOfElementsInPath:path subRange:rightRange thatOverlapWithRect:rect]];
         }
-    }
+    };
 
-    return overlapIndices;
+    findIndicesOfElementsInPath(path, subRange, rect);
+    return foundIndices;
 }
 
 /**
@@ -277,7 +283,7 @@ static NSInteger segmentCompareCount = 0;
 
                                     CGFloat path2LengthBeforeElement = 0;
                                     if (i > 0) {
-                                        path2LengthBeforeElement = [path2 totalLengthOfPathAfterElement:i - 1 withAcceptableError:kUIBezierClosenessPrecision];
+                                        path2LengthBeforeElement = [path2 lengthOfPathThroughElement:i - 1 withAcceptableError:kUIBezierClosenessPrecision];
                                     }
                                     CGFloat path2ElementLength = [path2 lengthOfElement:i withAcceptableError:kUIBezierClosenessPrecision];
 

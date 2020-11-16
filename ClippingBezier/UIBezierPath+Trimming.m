@@ -174,43 +174,52 @@
     return newPath;
 }
 
-- (UIBezierPath *)bezierPathWithRange:(NSRange)range
+- (CGRect)boundsForSubPathWithRange:(NSRange)range
 {
-    UIBezierPath *newPath = [UIBezierPath bezierPath];
+//    CGPoint *points;
+    __block CGFloat minX = CGFLOAT_MAX;
+    __block CGFloat minY = CGFLOAT_MAX;
+    __block CGFloat maxX = CGFLOAT_MIN;
+    __block CGFloat maxY = CGFLOAT_MIN;
 
     CGPoint points[3];
     CGPathElement element;
 
+    void (^assignMinMax)(CGPoint) = ^(CGPoint p) {
+        minX = MIN(p.x, minX);
+        minY = MIN(p.y, minY);
+        maxX = MAX(p.x, maxX);
+        maxY = MAX(p.y, maxY);
+    };
+
     CGPoint previousPoint = [self startPointForSubPathBeginningWithElementIndex:range.location];
     if (!CGPointEqualToPoint(previousPoint, CGPointNotFound)) {
-        [newPath moveToPoint:previousPoint];
+        assignMinMax(previousPoint);
     }
 
     for (long n = range.location + 1; n < range.location + range.length && n < [self elementCount]; n++) {
-
         element = [self elementAtIndex:n associatedPoints:points];
         switch (element.type) {
             case kCGPathElementMoveToPoint:
-                [newPath moveToPoint:points[0]];
+                assignMinMax(points[0]);
                 break;
             case kCGPathElementAddLineToPoint:
-                [newPath addLineToPoint:points[0]];
+                assignMinMax(points[0]);
                 break;
             case kCGPathElementAddCurveToPoint:
             case kCGPathElementAddQuadCurveToPoint:
-                [newPath addCurveToPoint:points[2]
-                           controlPoint1:points[0]
-                           controlPoint2:points[1]];
+                for (int i = 0; i <= 2; i++) {
+                    assignMinMax(points[i]);
+                }
                 break;
             case kCGPathElementCloseSubpath: {
-                CGPoint startPoint = [self startPointForSubPathBeginningWithElementIndex:0];
-                [newPath addLineToPoint:startPoint];
+                assignMinMax(self.firstPoint);
                 break;
             }
         }
     }
 
-    return newPath;
+    return CGRectMake(minX, minY, maxX - minX, maxY - minY);
 }
 
 - (CGPoint)startPointForSubPathBeginningWithElementIndex:(NSInteger)elementIndex {
