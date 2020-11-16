@@ -1055,8 +1055,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)5, @"5 intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)5, @"5 intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)6, @"5 intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)6, @"5 intersections so we can check for the tangent case");
 }
 
 - (void)testLineThroughNearTangent
@@ -1094,8 +1094,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
 }
 
 - (void)testShapeWithLoop
@@ -1197,8 +1197,8 @@
     NSArray *intersections1 = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:nil];
     NSArray *intersections2 = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:nil];
 
-    XCTAssertEqual([intersections1 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
-    XCTAssertEqual([intersections2 count], (NSUInteger)3, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections1 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
+    XCTAssertEqual([intersections2 count], (NSUInteger)4, @"intersections so we can check for the tangent case");
 }
 
 - (void)testScissorsCreatingHole
@@ -1273,7 +1273,6 @@
     [scissorPath moveToPoint:CGPointMake(493.500000, 1024.000000)];
     [scissorPath addCurveToPoint:CGPointMake(495.500000, 1024.000000) controlPoint1:CGPointMake(494.250000, 1024.000000) controlPoint2:CGPointMake(494.750000, 1024.000000)];
 
-
     BOOL beginsInside = NO;
     NSArray *scissorToShapeIntersections = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:&beginsInside];
     NSArray *shapeToScissorIntersections = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:&beginsInside];
@@ -1303,6 +1302,22 @@
     // the square wraps around the outside of the circle
     UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
     UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    BOOL beginsInside = NO;
+    NSArray *scissorToShapeIntersections = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:&beginsInside];
+    NSArray *shapeToScissorIntersections = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:&beginsInside];
+
+    XCTAssertEqual([scissorToShapeIntersections count], [shapeToScissorIntersections count], @"count of intersections matches");
+    XCTAssertEqual([scissorToShapeIntersections count], (NSUInteger)3, @"count of intersections matches");
+}
+
+- (void)testCircleThroughReversedRectangle
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    shapePath = [shapePath bezierPathByReversingPath];
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+
     BOOL beginsInside = NO;
     NSArray *scissorToShapeIntersections = [scissorPath findIntersectionsWithClosedPath:shapePath andBeginsInside:&beginsInside];
     NSArray *shapeToScissorIntersections = [shapePath findIntersectionsWithClosedPath:scissorPath andBeginsInside:&beginsInside];

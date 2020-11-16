@@ -262,8 +262,8 @@
                                                                                                     comp:[shapePath isClockwise]];
     XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
 
-    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 1, @"correct intersection");
-    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)1.0, @"correct intersection");
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 2, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], (CGFloat)0, @"correct intersection");
     XCTAssertEqual(redSegment.endIntersection.elementIndex1, 4, @"correct intersection");
     XCTAssertEqual([self round:redSegment.endIntersection.tValue1 to:6], (CGFloat)0.170317, @"correct intersection");
 
@@ -923,7 +923,7 @@
     NSArray *blueSegments = [allSegments lastObject];
 
     XCTAssertEqual([redSegments count], (NSUInteger)6, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)5, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)6, @"correct number of segments");
 
     DKUIBezierPathClippedSegment *redSegment = [redSegments objectAtIndex:0];
     DKUIBezierPathClippedSegment *correctSegment = [blueSegments objectAtIndex:2];
@@ -1243,8 +1243,8 @@
     NSArray *redSegments = [redBlueSegs firstObject];
     NSArray *blueSegments = [redBlueSegs lastObject];
 
-    XCTAssertEqual([redSegments count], (NSUInteger)2, @"the curves do intersect");
-    XCTAssertEqual([blueSegments count], (NSUInteger)2, @"the curves do intersect");
+    XCTAssertEqual([redSegments count], (NSUInteger)4, @"the curves do intersect");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"the curves do intersect");
 
     DKUIBezierPathClippedSegment *redSegment = [redSegments objectAtIndex:0];
     DKUIBezierPathClippedSegment *correctSegment = [blueSegments objectAtIndex:0];
@@ -1999,9 +1999,9 @@
     NSArray *greenSegments = [redGreenBlueSegs objectAtIndex:1];
     NSArray *blueSegments = [redGreenBlueSegs lastObject];
 
-    XCTAssertEqual([redSegments count], (NSUInteger)2, @"correct number of segments");
+    XCTAssertEqual([redSegments count], (NSUInteger)3, @"correct number of segments");
     XCTAssertEqual([greenSegments count], (NSUInteger)2, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     for (DKUIBezierPathClippedSegment *segment in blueSegments) {
         __block int countOfMoveTo = 0;
@@ -2017,8 +2017,8 @@
     redSegments = [redBlueSegs firstObject];
     blueSegments = [redBlueSegs lastObject];
 
-    XCTAssertEqual([redSegments count], (NSUInteger)4, @"correct number of segments");
-    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+    XCTAssertEqual([redSegments count], (NSUInteger)6, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)4, @"correct number of segments");
 
     for (DKUIBezierPathClippedSegment *segment in blueSegments) {
         __block int countOfMoveTo = 0;
@@ -2047,7 +2047,7 @@
     XCTAssertEqual(blueSegment.startIntersection.elementIndex2, 1, @"correct intersection");
     XCTAssertEqual([self round:blueSegment.startIntersection.tValue2 to:6], (CGFloat)0.733333, @"correct intersection");
     XCTAssertEqual(blueSegment.endIntersection.elementIndex2, 1, @"correct intersection");
-    XCTAssertEqual([self round:blueSegment.endIntersection.tValue2 to:6], (CGFloat)0.733333, @"correct intersection");
+    XCTAssertEqual([self round:blueSegment.endIntersection.tValue2 to:6], (CGFloat)0.733334, @"correct intersection");
 }
 
 - (void)testTangentToSquareHoleInRectangle
@@ -2307,6 +2307,21 @@
 
     XCTAssertEqual([redSegments count], (NSUInteger)3, @"the curves do intersect");
     XCTAssertEqual([blueSegments count], (NSUInteger)1, @"the curves do intersect");
+}
+
+- (void)testCircleThroughRectangleFindsRedGreenAndBlueSegments2
+{
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+
+    NSArray *redGreenBlueSegs = [UIBezierPath redAndGreenAndBlueSegmentsCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
+    NSArray *redSegments = [redGreenBlueSegs firstObject];
+    NSArray *greenSegments = [redGreenBlueSegs objectAtIndex:1];
+    NSArray *blueSegments = [redGreenBlueSegs lastObject];
+
+    XCTAssertEqual([redSegments count], (NSUInteger)2, @"correct number of segments");
+    XCTAssertEqual([greenSegments count], (NSUInteger)1, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
 }
 
 @end
