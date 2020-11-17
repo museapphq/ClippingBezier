@@ -281,6 +281,12 @@
 
     dist = [path effectiveTDistanceFromElement:3 andTValue:0.5 toElement:1 andTValue:0.25];
     XCTAssertEqual(dist, 0.75);
+
+    dist = [path effectiveTDistanceFromElement:1 andTValue:0 toElement:3 andTValue:1];
+    XCTAssertEqual(dist, 0.0);
+
+    dist = [path effectiveTDistanceFromElement:3 andTValue:1 toElement:1 andTValue:0];
+    XCTAssertEqual(dist, 0.0);
 }
 
 - (void)testTValueDistanceClose1
@@ -302,6 +308,12 @@
 
     dist = [path effectiveTDistanceFromElement:3 andTValue:1 toElement:0 andTValue:.5];
     XCTAssertEqual(dist, 0);
+
+    dist = [path effectiveTDistanceFromElement:1 andTValue:0 toElement:2 andTValue:1];
+    XCTAssertEqual(dist, -1.0);
+
+    dist = [path effectiveTDistanceFromElement:2 andTValue:1 toElement:1 andTValue:0];
+    XCTAssertEqual(dist, 1.0);
 }
 
 - (void)testTValueDistanceClose2
@@ -404,6 +416,37 @@
 
     dist = [path effectiveTDistanceFromElement:3 andTValue:0.5 toElement:6 andTValue:0.95];
     XCTAssertEqualWithAccuracy(dist, 0.5, 0.000001);
+}
+
+- (void)testTValueLoopBackwardClose
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(400, 300)];
+    [path addLineToPoint:CGPointMake(300, 400)];
+    [path addLineToPoint:CGPointMake(200, 300)];
+    [path addLineToPoint:CGPointMake(300, 200)];
+    [path addLineToPoint:CGPointMake(400, 300)];
+    [path closePath];
+
+    CGFloat dist = [path effectiveTDistanceFromElement:1 andTValue:0 toElement:4 andTValue:1];
+    XCTAssertEqual(dist, 0.0);
+
+    dist = [path effectiveTDistanceFromElement:4 andTValue:1 toElement:1 andTValue:0];
+    XCTAssertEqual(dist, 0.0);
+}
+
+- (void)testTValueClippingCase
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(400, 300)];
+    [path addCurveToPoint:CGPointMake(300, 400) controlPoint1:CGPointMake(400, 355.22847498) controlPoint2:CGPointMake(355.22847498, 400)];
+    [path addCurveToPoint:CGPointMake(200, 300) controlPoint1:CGPointMake(244.77152502, 400) controlPoint2:CGPointMake(200, 355.22847498)];
+    [path addCurveToPoint:CGPointMake(300, 200) controlPoint1:CGPointMake(200, 244.77152502) controlPoint2:CGPointMake(244.77152502, 200)];
+    [path addCurveToPoint:CGPointMake(400, 300) controlPoint1:CGPointMake(355.22847498, 200) controlPoint2:CGPointMake(400, 244.77152502)];
+    [path closePath];
+
+    CGFloat dist = [path effectiveTDistanceFromElement:4 andTValue:0.99999568124138771 toElement:1 andTValue:0.0000028883736617010538];
+    XCTAssertEqualWithAccuracy(dist, 0.000007, 0.000001);
 }
 
 @end
