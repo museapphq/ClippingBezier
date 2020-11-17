@@ -10,9 +10,9 @@
 #import <UIKit/UIKit.h>
 
 typedef CF_ENUM(int32_t, DKIntersectionDirection) {
-    kDKIntersectionDirectionLeft,
-    kDKIntersectionDirectionSame,
-    kDKIntersectionDirectionRight
+    kDKIntersectionDirectionLeft = -1,
+    kDKIntersectionDirectionSame = 0,
+    kDKIntersectionDirectionRight = 1
 };
 
 @interface DKUIBezierPathIntersectionPoint : NSObject

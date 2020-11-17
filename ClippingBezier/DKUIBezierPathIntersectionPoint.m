@@ -102,7 +102,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f) %d]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2, mayCrossBoundary];
+    return [NSString stringWithFormat:@"[Intersection (%d %f) (%d %f) b:%d d:%d]", (int)elementIndex1, tValue1, (int)elementIndex2, tValue2, mayCrossBoundary, _direction];
 }
 
 - (void)dealloc

@@ -349,10 +349,6 @@ static NSInteger segmentCompareCount = 0;
                     BOOL closeLocation1 = [lastInter isCloseToIntersection:intersection withPrecision:kUIBezierClosenessPrecision];
                     BOOL closeLocation2 = [[lastInter flipped] isCloseToIntersection:[intersection flipped] withPrecision:kUIBezierClosenessPrecision];
 
-                    if (closeLocation1 != closeLocation2) {
-                        NSLog(@"gotcha");
-                    }
-
                     isDistinctIntersection = !closeLocation1 || !closeLocation2;
                 }
             }
@@ -1949,8 +1945,6 @@ static NSInteger segmentCompareCount = 0;
             //            [output addObject:currentlyBuiltShape];
             [usedBlueSegments removeAllObjects];
         } else {
-            //            NSLog(@"adding shape");
-
             NSIndexSet *indexes = [currentlyBuiltShape.segments indexesOfObjectsPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
                 // all shape segments, when blue, will have been flipped
                 return (BOOL)([intersectionsOfShell containsObject:[[obj startIntersection] flipped]] ||
@@ -1988,10 +1982,6 @@ static NSInteger segmentCompareCount = 0;
         }
         [allUnusedBlueSegments removeObjectsInArray:usedBlueSegments];
     }
-
-    //    NSLog(@"found shapes: %@", output);
-    //    NSLog(@"found possible holes: %@", holesInNewShapes);
-    //    NSLog(@"still have %d unused blue segments", [allUnusedBlueSegments count]);
 
     for (DKUIBezierPathShape *potentialHole in [holesInNewShapes copy]) {
         // make sure the probable hole is actually a hole, and that
@@ -2040,7 +2030,6 @@ static NSInteger segmentCompareCount = 0;
                 if (!currentSegmentCandidate) {
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
-                    //                        NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
                     if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                         // never allow exactly backwards tangents
                     } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
@@ -2053,7 +2042,6 @@ static NSInteger segmentCompareCount = 0;
                     DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                     DKVector *currPoss = [[currentSegmentCandidate pathSegment] tangentNearStart].tangent;
                     DKVector *newPoss = [[blueSeg pathSegment] tangentNearStart].tangent;
-                    //                        NSLog(@"angle: %f vs %f", [currSeg angleBetween:currPoss], [currSeg angleBetween:newPoss]);
                     if (gt) {
                         if ([currSeg angleWithRespectTo:newPoss] > [currSeg angleWithRespectTo:currPoss]) {
                             if ([UIBezierPath round:[currSeg angleWithRespectTo:newPoss] to:3] == [UIBezierPath round:M_PI to:3]) {
@@ -2091,7 +2079,6 @@ static NSInteger segmentCompareCount = 0;
             if (!currentSegmentCandidate) {
                 DKVector *currSeg = [[segment pathSegment] tangentNearEnd].tangent;
                 DKVector *currPoss = [[redSeg pathSegment] tangentNearStart].tangent;
-                //                    NSLog(@"angle: %f", [currSeg angleBetween:currPoss]);
                 if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:M_PI to:6]) {
                     // never allow exactly backwards tangents
                 } else if ([UIBezierPath round:[currSeg angleWithRespectTo:currPoss] to:6] == [UIBezierPath round:-M_PI to:6]) {
