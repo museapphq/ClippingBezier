@@ -314,6 +314,12 @@
 
     dist = [path effectiveTDistanceFromElement:2 andTValue:1 toElement:1 andTValue:0];
     XCTAssertEqual(dist, 1.0);
+
+    dist = [path effectiveTDistanceFromElement:3 andTValue:0.1 toElement:0 andTValue:.5];
+    XCTAssertEqualWithAccuracy(dist, 0.9, 0.000001);
+
+    dist = [path effectiveTDistanceFromElement:0 andTValue:0.5 toElement:3 andTValue:0.1];
+    XCTAssertEqualWithAccuracy(dist, -0.9, 0.000001);
 }
 
 - (void)testTValueDistanceClose2
@@ -344,6 +350,12 @@
 
     dist = [path effectiveTDistanceFromElement:1 andTValue:0.5 toElement:2 andTValue:.5];
     XCTAssertEqual(dist, 1);
+
+    dist = [path effectiveTDistanceFromElement:3 andTValue:0.1 toElement:0 andTValue:.5];
+    XCTAssertEqual(dist, 0);
+
+    dist = [path effectiveTDistanceFromElement:0 andTValue:0.5 toElement:3 andTValue:0.1];
+    XCTAssertEqual(dist, 0);
 }
 
 - (void)testTValueDistanceClose3
