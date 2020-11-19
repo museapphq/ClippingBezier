@@ -281,7 +281,7 @@
                    controlPoint1:CGPointMake(500, 560)
                    controlPoint2:CGPointMake(720, 750)];
 
-    UIBezierPath *shapePath = self.complexShape;
+    UIBezierPath *shapePath = self.complexShape1;
 
     XCTAssertTrue([shapePath isClockwise], @"shape is correct direction");
 
@@ -852,7 +852,7 @@
 {
     // here, the scissor is a circle that is contained with in a square shape
     // the square wraps around the outside of the circle
-    UIBezierPath *shapePath = self.complexShape;
+    UIBezierPath *shapePath = self.complexShape1;
     UIBezierPath *scissorPath = [UIBezierPath bezierPath];
     [scissorPath moveToPoint:CGPointMake(200, 301.7455)];
     [scissorPath addLineToPoint:CGPointMake(700, 301.7455)];
@@ -915,7 +915,7 @@
     [scissorPath moveToPoint:CGPointMake(200, 1000)];
     [scissorPath addLineToPoint:CGPointMake(450, 710)];
 
-    UIBezierPath *shapePath = self.complexShape;
+    UIBezierPath *shapePath = self.complexShape1;
 
     XCTAssertTrue([shapePath isClockwise], @"shape is correct direction");
 
@@ -1227,7 +1227,7 @@
 
 - (void)testZigZagThroughComplexShapeTangents
 {
-    UIBezierPath *shapePath = self.complexShape;
+    UIBezierPath *shapePath = self.complexShape1;
     UIBezierPath *scissorPath = [UIBezierPath bezierPath];
     [scissorPath moveToPoint:CGPointMake(200, 300)];
     [scissorPath addLineToPoint:CGPointMake(600, 300)];
@@ -1322,7 +1322,7 @@
     UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
     UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
 
-    XCTAssertTrue([shapePath isClockwise], @"shape is clockwise");
+    XCTAssertTrue([shapePath isClockwise], @"default rectangle path is clockwise");
 
     NSArray *allSegments = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
     NSArray *redSegments = [allSegments firstObject];
@@ -1360,6 +1360,43 @@
                                                                                                         comp:[shapePath isClockwise]];
         XCTAssertTrue([redSegment.endVector angleWithRespectTo:currentSegmentCandidate.startVector] > 0, @"angle is right turn");
     }
+}
+
+- (void)testCircleThroughRectangleFirstSegmentTangent3
+{
+    // here, the scissor is a circle that is contained with in a square shape
+    // the square wraps around the outside of the circle
+    UIBezierPath *scissorPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(200, 200, 200, 200)];
+    UIBezierPath *shapePath = [UIBezierPath bezierPathWithRect:CGRectMake(200, 200, 200, 100)];
+
+    XCTAssertTrue([shapePath isClockwise], @"default rectangle path is clockwise");
+
+    NSArray *allSegments = [UIBezierPath redAndBlueSegmentsForShapeBuildingCreatedFrom:shapePath bySlicingWithPath:scissorPath andNumberOfBlueShellSegments:nil];
+    NSArray *redSegments = [allSegments firstObject];
+    NSArray *blueSegments = [allSegments lastObject];
+
+
+    XCTAssertEqual([redSegments count], (NSUInteger)4, @"correct number of segments");
+    XCTAssertEqual([blueSegments count], (NSUInteger)3, @"correct number of segments");
+
+    DKUIBezierPathClippedSegment *redSegment = [redSegments objectAtIndex:0];
+    DKUIBezierPathClippedSegment *correctSegment = [redSegments objectAtIndex:1];
+    DKUIBezierPathClippedSegment *currentSegmentCandidate = [UIBezierPath getBestMatchSegmentForSegments:[NSArray arrayWithObject:redSegment]
+                                                                                                  forRed:redSegments
+                                                                                                 andBlue:blueSegments
+                                                                                              lastWasRed:YES
+                                                                                                    comp:[shapePath isClockwise]];
+    XCTAssertTrue(currentSegmentCandidate == correctSegment, @"found correct segment");
+
+    XCTAssertEqual(redSegment.startIntersection.elementIndex1, 2, @"correct intersection");
+    XCTAssertEqual([self round:redSegment.startIntersection.tValue1 to:6], 1.0, @"correct intersection");
+    XCTAssertEqual(redSegment.endIntersection.elementIndex1, 3, @"correct intersection");
+    XCTAssertEqualWithAccuracy(redSegment.endIntersection.tValue1, 1.0, 0.000001);
+
+    XCTAssertEqual(currentSegmentCandidate.startIntersection.elementIndex1, 3, @"correct intersection");
+    XCTAssertEqualWithAccuracy(currentSegmentCandidate.startIntersection.tValue1, 1.0, 0.000001);
+    XCTAssertEqual(currentSegmentCandidate.endIntersection.elementIndex1, 4, @"correct intersection");
+    XCTAssertEqual([self round:currentSegmentCandidate.endIntersection.tValue1 to:6], 0.999997, @"correct intersection");
 }
 
 @end
