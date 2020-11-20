@@ -25,7 +25,6 @@
 #import "DKUIBezierPathShape.h"
 #import "UIBezierPath+Intersections.h"
 #import "UIBezierPath+Trimming.h"
-#import "UIBezierPath+Ahmed.h"
 #import <PerformanceBezier/PerformanceBezier.h>
 #import <ClippingBezier/ClippingBezier.h>
 #include "point.h"
@@ -1528,7 +1527,18 @@ static NSInteger segmentCompareCount = 0;
         BOOL beginsInside1 = NO;
         NSMutableArray *tValuesOfIntersectionPoints = [NSMutableArray arrayWithArray:[self findIntersectionsWithClosedPath:scissors andBeginsInside:&beginsInside1]];
         DKUIBezierPathClippingResult *clipped = [self clipUnclosedPathToClosedPath:scissors usingIntersectionPoints:tValuesOfIntersectionPoints andBeginsInside:beginsInside1];
-        return intersection ? @[clipped.entireIntersectionPath] : @[clipped.entireDifferencePath];
+
+        NSMutableArray<UIBezierPath *> *paths = [NSMutableArray array];
+        if (intersection) {
+            for (DKUIBezierPathClippedSegment *seg in clipped.intersectionSegments) {
+                [paths addObject:seg.pathSegment];
+            }
+        } else {
+            for (DKUIBezierPathClippedSegment *seg in clipped.differenceSegments) {
+                [paths addObject:seg.pathSegment];
+            }
+        }
+        return paths.copy;
     } else {
         return nil;
     }

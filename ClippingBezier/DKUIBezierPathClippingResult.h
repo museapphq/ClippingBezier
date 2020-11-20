@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "DKUIBezierPathClippedSegment.h"
 
 /**
  * when clipping an unclosed path to a closed path,
@@ -22,8 +23,8 @@
 
 @property(nonatomic, readonly) UIBezierPath *entireIntersectionPath;
 @property(nonatomic, readonly) UIBezierPath *entireDifferencePath;
-@property(nonatomic, readonly) NSArray *intersectionSegments;
-@property(nonatomic, readonly) NSArray *differenceSegments;
+@property(nonatomic, readonly) NSArray<DKUIBezierPathClippedSegment *> *intersectionSegments;
+@property(nonatomic, readonly) NSArray<DKUIBezierPathClippedSegment *> *differenceSegments;
 @property(nonatomic, readonly) NSUInteger numberOfShellIntersectionSegments;
 @property(nonatomic, readonly) NSUInteger numberOfShellDifferenceSegments;
 
